@@ -39,7 +39,7 @@ export default function HomeScreen({ navigation }: any) {
         </View>
 
         {/* Upcoming deadline — self-contained shadow */}
-        <UpcomingDeadlineCard tasks={tasks} />
+        <UpcomingDeadlineCard tasks={tasks} navigation={navigation} />
       </ScrollView>
     </SafeAreaView>
   );

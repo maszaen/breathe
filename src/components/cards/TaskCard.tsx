@@ -102,12 +102,6 @@ export default function TaskCard({
 
         {!task.completed && (
           <View style={styles.bottomRow}>
-            <View style={[styles.statusBadge, { backgroundColor: statusBgColor }]}>
-              <Text style={[styles.statusText, { color: status.color }]}>
-                {status.text}
-              </Text>
-            </View>
-
             <TouchableOpacity
               style={styles.focusBtn}
               onPress={(e) => {
@@ -120,6 +114,12 @@ export default function TaskCard({
               <Ionicons name="timer-outline" size={13} color={Colors.primary} />
               <Text style={styles.focusBtnText}>Focus</Text>
             </TouchableOpacity>
+
+            <View style={[styles.statusBadge, { backgroundColor: statusBgColor }]}>
+              <Text style={[styles.statusText, { color: status.color }]}>
+                {status.text}
+              </Text>
+            </View>
           </View>
         )}
       </View>
@@ -208,7 +208,8 @@ const styles = StyleSheet.create({
   bottomRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    gap: 8,
     marginTop: 6,
   },
 

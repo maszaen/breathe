@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { Task } from "../../context/TaskContext";
@@ -11,14 +11,16 @@ import { Spacing } from "../../theme/spacing";
 
 type UpcomingDeadlineCardProps = {
   tasks: Task[];
+  navigation: any;
 };
 
-export default function UpcomingDeadlineCard({ tasks }: UpcomingDeadlineCardProps) {
+export default function UpcomingDeadlineCard({ tasks, navigation }: UpcomingDeadlineCardProps) {
   const upcomingTasks = sortTasksByDeadline(tasks.filter((t) => !t.completed));
-  const nextTask = upcomingTasks[0];
-  const status = nextTask
-    ? getDeadlineStatus(nextTask.deadline, nextTask.deadlineTime)
-    : null;
+  const displayTasks = upcomingTasks.slice(0, 4);
+
+  const handleTaskPress = () => {
+    navigation.navigate("Main", { screen: "Task" });
+  };
 
   return (
     <View style={styles.card}>
@@ -27,30 +29,54 @@ export default function UpcomingDeadlineCard({ tasks }: UpcomingDeadlineCardProp
           <View style={styles.iconWrap}>
             <Ionicons name="calendar-outline" size={18} color={Colors.primary} />
           </View>
-          <Text style={styles.headerTitle}>Upcoming Deadline</Text>
+          <Text style={styles.headerTitle}>Upcoming Deadlines</Text>
         </View>
-        {nextTask && (
-          <View style={[styles.statusBadge, { backgroundColor: (status?.color ?? Colors.textSecondary) + "20" }]}>
-            <Text style={[styles.statusBadgeText, { color: status?.color ?? Colors.textSecondary }]}>
-              {status?.text}
-            </Text>
-          </View>
-        )}
+        <View style={styles.badgeWrap}>
+          <Text style={styles.badgeText}>{upcomingTasks.length}</Text>
+        </View>
       </View>
 
-      {nextTask ? (
-        <View style={styles.body}>
-          <Text style={styles.taskName} numberOfLines={2}>
-            {nextTask.taskName}
-          </Text>
-          <Text style={styles.course}>{nextTask.course}</Text>
+      {displayTasks.length > 0 ? (
+        <View style={styles.list}>
+          {displayTasks.map((task, index) => {
+            const status = getDeadlineStatus(task.deadline, task.deadlineTime);
+            return (
+              <TouchableOpacity
+                key={task.id}
+                style={[
+                  styles.taskItem,
+                  index < displayTasks.length - 1 && styles.taskBorder,
+                ]}
+                onPress={handleTaskPress}
+                activeOpacity={0.7}
+              >
+                <View style={styles.taskInfo}>
+                  <Text style={styles.taskName} numberOfLines={1}>
+                    {task.taskName}
+                  </Text>
+                  <Text style={styles.course} numberOfLines={1}>
+                    {task.course}
+                  </Text>
+                </View>
 
-          <View style={styles.dateRow}>
-            <Ionicons name="time-outline" size={14} color={Colors.textSecondary} />
-            <Text style={styles.dateText}>
-              {nextTask.deadline} · {nextTask.deadlineTime}
-            </Text>
-          </View>
+                <View style={styles.taskMeta}>
+                  <Text style={[styles.statusText, { color: status.color }]}>
+                    {status.text}
+                  </Text>
+                  <Text style={styles.timeText}>
+                    {task.deadlineTime}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+
+          {upcomingTasks.length > 4 && (
+            <TouchableOpacity style={styles.viewMoreBtn} onPress={handleTaskPress} activeOpacity={0.7}>
+              <Text style={styles.viewMoreText}>Go to tasks</Text>
+              <Ionicons name="chevron-forward" size={14} color={Colors.primary} />
+            </TouchableOpacity>
+          )}
         </View>
       ) : (
         <View style={styles.emptyWrap}>
@@ -67,6 +93,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderRadius: 24,
     padding: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
     ...Shadow.sm,
     gap: Spacing.md,
   },
@@ -95,43 +123,81 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
 
-  statusBadge: {
+  badgeWrap: {
+    backgroundColor: "#F3F4F6",
     borderRadius: Radius.full,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
 
-  statusBadgeText: {
+  badgeText: {
     fontSize: 12,
     fontWeight: "700",
+    color: Colors.textSecondary,
   },
 
-  body: {
-    gap: 4,
+  list: {
+    marginTop: 4,
+  },
+
+  taskItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+    gap: 12,
+  },
+
+  taskBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#F3F4F6",
+  },
+
+  taskInfo: {
+    flex: 1,
+    gap: 2,
   },
 
   taskName: {
-    fontSize: 17,
-    fontWeight: "700",
+    fontSize: 14,
+    fontWeight: "600",
     color: Colors.text,
   },
 
   course: {
-    fontSize: 13,
+    fontSize: 12,
     color: Colors.textSecondary,
   },
 
-  dateRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginTop: 6,
+  taskMeta: {
+    alignItems: "flex-end",
+    gap: 2,
   },
 
-  dateText: {
-    fontSize: 13,
+  statusText: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+
+  timeText: {
+    fontSize: 11,
     color: Colors.textSecondary,
     fontWeight: "500",
+  },
+
+  viewMoreBtn: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: Spacing.md,
+    marginTop: Spacing.xs,
+    gap: 4,
+  },
+
+  viewMoreText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: Colors.primary,
   },
 
   emptyWrap: {
