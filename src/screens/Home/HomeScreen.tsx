@@ -3,12 +3,9 @@ import { ScrollView, StyleSheet, View, Text } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import WelcomeCard from "../../components/home/WelcomeCard";
-import MentalHealthCard from "../../components/home/MentalHealthCard";
+import HeroCard from "../../components/home/HeroCard";
 import UpcomingDeadlineCard from "../../components/home/UpcomingDeadlineCard";
-import QuickActionGrid from "../../components/home/QuickActionGrid";
-import FunBreakCard from "../../components/home/FunBreakCard";
-import TipsCard from "../../components/home/TipsCard";
+import ActionsCard from "../../components/home/ActionsCard";
 
 import { useTask } from "../../context/TaskContext";
 
@@ -28,17 +25,11 @@ export default function HomeScreen({ navigation }: any) {
           <Text style={styles.brandName}>breathe</Text>
         </View>
 
-        <WelcomeCard />
-
-        <MentalHealthCard tasks={tasks} />
+        <HeroCard tasks={tasks} />
 
         <UpcomingDeadlineCard tasks={tasks} />
 
-        <QuickActionGrid navigation={navigation} />
-
-        <FunBreakCard navigation={navigation} />
-
-        <TipsCard tasks={tasks} />
+        <ActionsCard navigation={navigation} />
       </ScrollView>
     </SafeAreaView>
   );
