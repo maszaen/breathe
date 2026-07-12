@@ -1,15 +1,16 @@
 import React from "react";
-import { ScrollView, StyleSheet, View, Text } from "react-native";
+import { ScrollView, StyleSheet, View, Image } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import HeroCard from "../../components/home/HeroCard";
+import QuickActionsCard from "../../components/home/QuickActionsCard";
+import FunBreakCard from "../../components/home/FunBreakCard";
 import UpcomingDeadlineCard from "../../components/home/UpcomingDeadlineCard";
-import ActionsCard from "../../components/home/ActionsCard";
 
 import { useTask } from "../../context/TaskContext";
 
-import { Colors } from "../../theme/colors";
+import { Colors, Shadow } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
 
 export default function HomeScreen({ navigation }: any) {
@@ -21,15 +22,24 @@ export default function HomeScreen({ navigation }: any) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <View style={styles.pageHeader}>
-          <Text style={styles.brandName}>breathe</Text>
-        </View>
+        {/* Brand logo */}
+        <Image
+          source={require("../../assets/images/breathe-logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
+        {/* Hero card — self-contained shadow */}
         <HeroCard tasks={tasks} />
 
-        <UpcomingDeadlineCard tasks={tasks} />
+        {/* Quick Actions — shadow wrapper (overflow:hidden needs separate shadow) */}
+        <View style={styles.cardShadow}>
+          <QuickActionsCard navigation={navigation} />
+          <FunBreakCard navigation={navigation} />
+        </View>
 
-        <ActionsCard navigation={navigation} />
+        {/* Upcoming deadline — self-contained shadow */}
+        <UpcomingDeadlineCard tasks={tasks} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -43,20 +53,21 @@ const styles = StyleSheet.create({
 
   content: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.xs,
     paddingBottom: 120,
     gap: 12,
   },
 
-  pageHeader: {
-    paddingTop: Spacing.xs,
-    paddingBottom: Spacing.xs,
+  logo: {
+    width: 150,
+    height: 64,
+    alignSelf: "flex-start",
   },
 
-  brandName: {
-    fontSize: 26,
-    fontWeight: "800",
-    color: Colors.primary,
-    letterSpacing: -0.5,
+  // Shadow lives here so overflow:hidden on card doesn't clip iOS shadow
+  cardShadow: {
+    borderRadius: 20,
+    ...Shadow.sm,
+    backgroundColor: Colors.surface,
   },
 });

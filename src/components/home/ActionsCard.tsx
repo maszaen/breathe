@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { Colors, Shadow } from "../../theme/colors";
+import { Colors } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
 
@@ -19,7 +19,7 @@ type ActionItem = {
 };
 
 export default function ActionsCard({ navigation }: ActionsCardProps) {
-  const quickActions: ActionItem[] = [
+  const allItems: ActionItem[] = [
     {
       icon: "add-circle",
       label: "Add Task",
@@ -41,9 +41,6 @@ export default function ActionsCard({ navigation }: ActionsCardProps) {
       iconColor: "#7C3AED",
       onPress: () => {},
     },
-  ];
-
-  const funBreakItems: ActionItem[] = [
     {
       icon: "game-controller",
       label: "Games",
@@ -67,37 +64,30 @@ export default function ActionsCard({ navigation }: ActionsCardProps) {
     },
   ];
 
+  const row1 = allItems.slice(0, 3);
+  const row2 = allItems.slice(3);
+
   const renderRow = (items: ActionItem[]) => (
     <View style={styles.row}>
-      {items.map((item, idx) => (
-        <React.Fragment key={item.label}>
-          <Pressable
-            style={({ pressed }) => [styles.item, pressed && { opacity: 0.7 }]}
-            onPress={item.onPress}
-          >
-            <View style={[styles.iconWrap, { backgroundColor: item.bgColor }]}>
-              <Ionicons name={item.icon} size={22} color={item.iconColor} />
-            </View>
-            <Text style={styles.label}>{item.label}</Text>
-          </Pressable>
-          {idx < items.length - 1 && <View style={styles.colDivider} />}
-        </React.Fragment>
+      {items.map((item) => (
+        <Pressable
+          key={item.label}
+          style={({ pressed }) => [styles.item, pressed && { opacity: 0.7 }]}
+          onPress={item.onPress}
+        >
+          <View style={[styles.iconWrap, { backgroundColor: item.bgColor }]}>
+            <Ionicons name={item.icon} size={22} color={item.iconColor} />
+          </View>
+          <Text style={styles.label}>{item.label}</Text>
+        </Pressable>
       ))}
     </View>
   );
 
   return (
     <View style={styles.card}>
-      {/* Quick Actions row */}
-      <Text style={styles.sectionLabel}>Quick Actions</Text>
-      {renderRow(quickActions)}
-
-      {/* Separator with label */}
-      <View style={styles.separator} />
-      <Text style={styles.sectionLabel}>Fun Break</Text>
-
-      {/* Fun Break row */}
-      {renderRow(funBreakItems)}
+      {renderRow(row1)}
+      {renderRow(row2)}
     </View>
   );
 }
@@ -105,38 +95,26 @@ export default function ActionsCard({ navigation }: ActionsCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.surface,
-    borderRadius: 20,
-    paddingVertical: Spacing.md,
+    // Top corners flat (connected to HeroCard above)
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
     paddingHorizontal: Spacing.md,
-    ...Shadow.sm,
-    gap: 10,
-  },
-
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: Colors.textSecondary,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    paddingHorizontal: 4,
+    gap: 4,
   },
 
   row: {
     flexDirection: "row",
-    alignItems: "center",
   },
 
   item: {
     flex: 1,
     alignItems: "center",
+    paddingVertical: 10,
     gap: 6,
-    paddingVertical: 8,
-  },
-
-  colDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: Colors.border,
   },
 
   iconWrap: {
@@ -152,11 +130,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.text,
     textAlign: "center",
-  },
-
-  separator: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginHorizontal: 4,
   },
 });

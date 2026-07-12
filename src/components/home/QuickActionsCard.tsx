@@ -2,11 +2,11 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-type FunBreakCardProps = {
+type QuickActionsCardProps = {
   navigation: any;
 };
 
-type BreakItem = {
+type ActionItem = {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   bg: string;
@@ -14,27 +14,27 @@ type BreakItem = {
   onPress: () => void;
 };
 
-export default function FunBreakCard({ navigation }: FunBreakCardProps) {
-  const items: BreakItem[] = [
+export default function QuickActionsCard({ navigation }: QuickActionsCardProps) {
+  const items: ActionItem[] = [
     {
-      icon: "game-controller",
-      label: "Games",
-      bg: "#FEE2E2",
-      iconColor: "#DC2626",
-      onPress: () => navigation.navigate("Fun Break"),
+      icon: "add-circle",
+      label: "Add Task",
+      bg: "#CFFAFE",
+      iconColor: "#0891B2",
+      onPress: () => navigation.navigate("AddTask"),
     },
     {
-      icon: "musical-notes",
-      label: "Music",
-      bg: "#D1FAE5",
-      iconColor: "#059669",
-      onPress: () => {},
+      icon: "timer",
+      label: "Pomodoro",
+      bg: "#FEF3C7",
+      iconColor: "#D97706",
+      onPress: () => navigation.navigate("Pomodoro"),
     },
     {
-      icon: "videocam",
-      label: "Videos",
-      bg: "#FFF7ED",
-      iconColor: "#EA580C",
+      icon: "sparkles",
+      label: "AI Chat",
+      bg: "#EDE9FE",
+      iconColor: "#7C3AED",
       onPress: () => {},
     },
   ];
@@ -48,7 +48,7 @@ export default function FunBreakCard({ navigation }: FunBreakCardProps) {
             style={({ pressed }) => [
               styles.btn,
               pressed && { opacity: 0.82 },
-              idx < items.length - 1 && styles.btnBorder, styles.btnBorderTop
+              idx < items.length - 1 && styles.btnBorder,
             ]}
             onPress={item.onPress}
           >
@@ -63,8 +63,8 @@ export default function FunBreakCard({ navigation }: FunBreakCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     overflow: "hidden",
   },
 
@@ -83,11 +83,6 @@ const styles = StyleSheet.create({
   btnBorder: {
     borderRightWidth: 1,
     borderRightColor: "rgba(0,0,0,0.07)",
-  },
-
-  btnBorderTop: {
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.07)",
   },
 
   label: {

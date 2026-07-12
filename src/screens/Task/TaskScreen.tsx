@@ -9,8 +9,6 @@ import {
   TouchableOpacity,
   Alert,
   LayoutAnimation,
-  Platform,
-  UIManager,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -27,12 +25,6 @@ import { Colors } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
 import { Radius } from "../../theme/radius";
 
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 export default function TaskScreen({ navigation }: any) {
   const { tasks, toggleTask, deleteTask } = useTask();
