@@ -45,7 +45,9 @@ const styles = StyleSheet.create({
 
     backgroundColor: Colors.primary,
 
-    borderRadius: Radius.lg,
+    borderRadius: Radius.full,
+
+    paddingHorizontal: Spacing.lg,
 
     height: 56,
 

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -40,7 +41,12 @@ export default function PomodoroScreen({ navigation }: Props) {
     pauseTimer,
     resumeTimer,
     stopSession,
+    setTimer,
+    startFocus,
   } = usePomodoro();
+
+  const [isEditingTime, setIsEditingTime] = React.useState(false);
+  const [tempMin, setTempMin] = React.useState("25");
 
   const previousSessionType = useRef(sessionType);
 
@@ -53,6 +59,21 @@ export default function PomodoroScreen({ navigation }: Props) {
       navigation.goBack();
     } else {
       navigation.navigate("Main", { screen: "Home" });
+    }
+  };
+
+  const handleTimerPress = () => {
+    if (!isRunning) {
+      setTempMin(String(Math.floor(remainingSeconds / 60)));
+      setIsEditingTime(true);
+    }
+  };
+
+  const handleTimerSubmit = () => {
+    setIsEditingTime(false);
+    const min = parseInt(tempMin, 10);
+    if (!isNaN(min) && min > 0) {
+      setTimer(min * 60);
     }
   };
 
@@ -77,8 +98,23 @@ export default function PomodoroScreen({ navigation }: Props) {
 
       {/* Timer */}
       <View style={styles.timerWrap}>
-        <Text style={styles.timer}>{formatTime(remainingSeconds)}</Text>
-        <Text style={styles.timerLabel}>remaining</Text>
+        {isEditingTime ? (
+          <TextInput
+            style={[styles.timer, styles.timerInput]}
+            value={tempMin}
+            onChangeText={setTempMin}
+            keyboardType="number-pad"
+            autoFocus
+            onBlur={handleTimerSubmit}
+            onSubmitEditing={handleTimerSubmit}
+            maxLength={3}
+          />
+        ) : (
+          <TouchableOpacity activeOpacity={0.7} onPress={handleTimerPress} disabled={isRunning}>
+            <Text style={styles.timer}>{formatTime(remainingSeconds)}</Text>
+          </TouchableOpacity>
+        )}
+        <Text style={styles.timerLabel}>remaining (tap to edit)</Text>
       </View>
 
       <Text style={styles.caption}>
@@ -103,9 +139,10 @@ export default function PomodoroScreen({ navigation }: Props) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.btnSecondary}
+          style={[styles.btnSecondary, isRunning && { opacity: 0.5 }]}
           onPress={() => finishFocus()}
           activeOpacity={0.85}
+          disabled={isRunning}
         >
           <Text style={styles.btnSecondaryText}>End Focus</Text>
         </TouchableOpacity>
@@ -126,10 +163,25 @@ export default function PomodoroScreen({ navigation }: Props) {
       <Text style={styles.taskName}>Recharge before the next sprint</Text>
 
       <View style={styles.timerWrap}>
-        <Text style={[styles.timer, { color: Colors.success }]}>
-          {formatTime(remainingSeconds)}
-        </Text>
-        <Text style={styles.timerLabel}>break remaining</Text>
+        {isEditingTime ? (
+          <TextInput
+            style={[styles.timer, styles.timerInput, { color: Colors.success }]}
+            value={tempMin}
+            onChangeText={setTempMin}
+            keyboardType="number-pad"
+            autoFocus
+            onBlur={handleTimerSubmit}
+            onSubmitEditing={handleTimerSubmit}
+            maxLength={3}
+          />
+        ) : (
+          <TouchableOpacity activeOpacity={0.7} onPress={handleTimerPress} disabled={isRunning}>
+            <Text style={[styles.timer, { color: Colors.success }]}>
+              {formatTime(remainingSeconds)}
+            </Text>
+          </TouchableOpacity>
+        )}
+        <Text style={styles.timerLabel}>break remaining (tap to edit)</Text>
       </View>
 
       <Text style={styles.caption}>
@@ -139,17 +191,20 @@ export default function PomodoroScreen({ navigation }: Props) {
       <View style={styles.btnRow}>
         <TouchableOpacity
           style={[styles.btnPrimary, { backgroundColor: Colors.success }]}
-          onPress={() => { if (!isRunning) resumeTimer(); }}
+          onPress={isRunning ? pauseTimer : resumeTimer}
           activeOpacity={0.85}
         >
-          <Ionicons name="play" size={18} color="#fff" />
-          <Text style={styles.btnPrimaryText}>Continue Break</Text>
+          <Ionicons name={isRunning ? "pause" : "play"} size={18} color="#fff" />
+          <Text style={styles.btnPrimaryText}>
+            {isRunning ? "Pause" : "Continue Break"}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.btnSecondary}
+          style={[styles.btnSecondary, isRunning && { opacity: 0.5 }]}
           onPress={() => stopSession()}
           activeOpacity={0.85}
+          disabled={isRunning}
         >
           <Text style={styles.btnSecondaryText}>End Break</Text>
         </TouchableOpacity>
@@ -173,19 +228,34 @@ export default function PomodoroScreen({ navigation }: Props) {
       </Text>
 
       <View style={styles.timerWrap}>
-        <Text style={[styles.timer, { color: Colors.textSecondary }]}>
-          25:00
-        </Text>
-        <Text style={styles.timerLabel}>default focus time</Text>
+        {isEditingTime ? (
+          <TextInput
+            style={[styles.timer, styles.timerInput, { color: Colors.textSecondary }]}
+            value={tempMin}
+            onChangeText={setTempMin}
+            keyboardType="number-pad"
+            autoFocus
+            onBlur={handleTimerSubmit}
+            onSubmitEditing={handleTimerSubmit}
+            maxLength={3}
+          />
+        ) : (
+          <TouchableOpacity activeOpacity={0.7} onPress={handleTimerPress}>
+            <Text style={[styles.timer, { color: Colors.textSecondary }]}>
+              {formatTime(remainingSeconds)}
+            </Text>
+          </TouchableOpacity>
+        )}
+        <Text style={styles.timerLabel}>focus time (tap to edit)</Text>
       </View>
 
       <TouchableOpacity
         style={styles.btnPrimary}
-        onPress={handleBack}
+        onPress={() => startFocus()}
         activeOpacity={0.85}
       >
-        <Ionicons name="arrow-back" size={18} color="#fff" />
-        <Text style={styles.btnPrimaryText}>Go Back</Text>
+        <Ionicons name="play" size={18} color="#fff" />
+        <Text style={styles.btnPrimaryText}>Start Focus</Text>
       </TouchableOpacity>
     </View>
   );
@@ -367,6 +437,14 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: Colors.primary,
     letterSpacing: 2,
+    textAlign: "center",
+  },
+
+  timerInput: {
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.border,
+    paddingVertical: 0,
+    minWidth: 100,
   },
 
   timerLabel: {
@@ -389,8 +467,10 @@ const styles = StyleSheet.create({
   },
 
   btnPrimary: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     backgroundColor: Colors.primary,
     borderRadius: Radius.full,
@@ -405,6 +485,7 @@ const styles = StyleSheet.create({
   },
 
   btnSecondary: {
+    flex: 1,
     borderWidth: 1.5,
     borderColor: Colors.border,
     borderRadius: Radius.full,

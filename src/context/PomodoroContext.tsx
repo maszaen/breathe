@@ -16,13 +16,14 @@ type PomodoroContextType = {
   isRunning: boolean;
   remainingSeconds: number;
   completedFocusSessions: number;
-  startFocus: (taskId: number) => boolean;
+  startFocus: (taskId?: number | null) => boolean;
   startBreak: () => void;
   finishFocus: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
   stopSession: () => void;
   resetSession: () => void;
+  setTimer: (seconds: number) => void;
 };
 
 const PomodoroContext = createContext<PomodoroContextType | undefined>(undefined);
@@ -59,7 +60,7 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [isRunning, sessionType]);
 
-  const startFocus = (taskId: number) => {
+  const startFocus = (taskId: number | null = null) => {
     if (
       sessionType !== "idle" ||
       activeTaskId !== null ||
@@ -77,7 +78,6 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
   };
 
   const startBreak = () => {
-    if (activeTaskId === null) return;
 
     setSessionType("break");
     setIsRunning(true);
@@ -85,7 +85,7 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
   };
 
   const finishFocus = () => {
-    if (sessionType !== "focus" || activeTaskId === null) return;
+    if (sessionType !== "focus") return;
 
     setCompletedFocusSessions((count) => count + 1);
     setSessionType("break");
@@ -113,6 +113,12 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
     stopSession();
   };
 
+  const setTimer = (seconds: number) => {
+    if (!isRunning) {
+      setRemainingSeconds(seconds);
+    }
+  };
+
   const value = useMemo<PomodoroContextType>(() => ({
     activeTaskId,
     sessionType,
@@ -126,6 +132,7 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
     resumeTimer,
     stopSession,
     resetSession,
+    setTimer,
   }), [
     activeTaskId,
     sessionType,
