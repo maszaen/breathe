@@ -2,8 +2,11 @@ import React, {
   createContext,
   useContext,
   useState,
+  useEffect,
   ReactNode,
 } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { generateDummyTasks } from "../utils/dummyTasks";
 
 export type Task = {
   id: number;
@@ -35,6 +38,42 @@ export function TaskProvider({
   children: ReactNode;
 }) {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load tasks on mount
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("BREATHE_TASKS");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setTasks(parsed);
+          } else {
+            setTasks(generateDummyTasks());
+          }
+        } else {
+          setTasks(generateDummyTasks());
+        }
+      } catch (error) {
+        console.error("Failed to load tasks from storage", error);
+        setTasks(generateDummyTasks());
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+
+    loadTasks();
+  }, []);
+
+  // Save tasks on change
+  useEffect(() => {
+    if (isLoaded) {
+      AsyncStorage.setItem("BREATHE_TASKS", JSON.stringify(tasks)).catch(err => {
+        console.error("Failed to save tasks to storage", err);
+      });
+    }
+  }, [tasks, isLoaded]);
 
   const addTask = (
     task: Omit<Task, "id" | "completed" | "createdAt">

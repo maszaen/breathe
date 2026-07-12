@@ -7,6 +7,9 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeInDown, FadeOutUp, LinearTransition } from "react-native-reanimated";
+
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 import { Task } from "../../context/TaskContext";
 import { usePomodoro } from "../../context/PomodoroContext";
@@ -55,7 +58,10 @@ export default function TaskCard({
   const statusBgColor = status.color + "18";
 
   return (
-    <TouchableOpacity
+    <AnimatedTouchableOpacity
+      layout={LinearTransition}
+      entering={FadeInDown.duration(250)}
+      exiting={FadeOutUp.duration(150)}
       activeOpacity={0.85}
       style={[styles.card, task.completed && styles.cardCompleted]}
       onPress={onPress}
@@ -132,7 +138,7 @@ export default function TaskCard({
       >
         <Ionicons name="trash-outline" size={18} color={Colors.textTertiary} />
       </TouchableOpacity>
-    </TouchableOpacity>
+    </AnimatedTouchableOpacity>
   );
 }
 

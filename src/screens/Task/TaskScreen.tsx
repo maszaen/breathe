@@ -8,7 +8,6 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
-  LayoutAnimation,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -24,6 +23,56 @@ import { groupTasks } from "../../utils/taskGrouping";
 import { Colors } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
 import { Radius } from "../../theme/radius";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  FadeInDown,
+  FadeOutUp,
+  LinearTransition,
+} from "react-native-reanimated";
+
+// Separate component for Header to handle Chevron rotation
+function SectionHeader({ section, isExpanded, onToggle }: any) {
+  const rotation = useSharedValue(isExpanded ? 180 : 0);
+
+  React.useEffect(() => {
+    rotation.value = withTiming(isExpanded ? 180 : 0, { duration: 300 });
+  }, [isExpanded]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotateZ: `${rotation.value}deg` }],
+    };
+  });
+
+  return (
+    <Animated.View layout={LinearTransition}>
+      <TouchableOpacity
+        onPress={onToggle}
+        style={styles.sectionHeader}
+        activeOpacity={0.7}
+      >
+        <View style={styles.sectionLeft}>
+          <Text style={styles.sectionTitle}>{section.title}</Text>
+          <View
+            style={[
+              styles.sectionCount,
+              { backgroundColor: section.color + "20" },
+            ]}
+          >
+            <Text style={[styles.sectionCountText, { color: section.color }]}>
+              {section.totalCount}
+            </Text>
+          </View>
+        </View>
+        <Animated.View style={animatedStyle}>
+          <Ionicons name="chevron-down" size={20} color={Colors.textTertiary} />
+        </Animated.View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
 
 
 export default function TaskScreen({ navigation }: any) {
@@ -46,12 +95,12 @@ export default function TaskScreen({ navigation }: any) {
   }, [activeSections.length]);
 
   const toggleSection = (title: string) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedSection(expandedSection === title ? null : title);
   };
 
   const visibleSections = activeSections.map((section) => ({
     ...section,
+    totalCount: section.data.length,
     data: expandedSection === section.title ? section.data : [],
   }));
 
@@ -132,47 +181,12 @@ export default function TaskScreen({ navigation }: any) {
                 </View>
               </View>
             }
-            renderSectionHeader={({ section }) => (
-              <TouchableOpacity
-                onPress={() => toggleSection(section.title)}
-                style={styles.sectionHeader}
-                activeOpacity={0.7}
-              >
-                <View style={styles.sectionLeft}>
-                  <View
-                    style={[
-                      styles.sectionDot,
-                      { backgroundColor: section.color },
-                    ]}
-                  />
-                  <Text
-                    style={[styles.sectionTitle, { color: section.color }]}
-                  >
-                    {section.title}
-                  </Text>
-                  <View
-                    style={[
-                      styles.sectionCount,
-                      { backgroundColor: section.color + "20" },
-                    ]}
-                  >
-                    <Text
-                      style={[styles.sectionCountText, { color: section.color }]}
-                    >
-                      {section.data.length}
-                    </Text>
-                  </View>
-                </View>
-                <Ionicons
-                  name={
-                    expandedSection === section.title
-                      ? "chevron-up"
-                      : "chevron-down"
-                  }
-                  size={16}
-                  color={section.color}
-                />
-              </TouchableOpacity>
+            renderSectionHeader={({ section }: any) => (
+              <SectionHeader 
+                section={section} 
+                isExpanded={expandedSection === section.title} 
+                onToggle={() => toggleSection(section.title)} 
+              />
             )}
             renderItem={({ item }) => (
               <TaskCard
@@ -310,15 +324,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 
-  sectionDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 18,
+    fontWeight: "800",
+    color: Colors.text,
   },
 
   sectionCount: {

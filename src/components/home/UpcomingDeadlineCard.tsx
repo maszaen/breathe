@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.md,
     marginTop: Spacing.xs,
     gap: 4,
+    paddingBottom: Spacing.sm,
   },
 
   viewMoreText: {
