@@ -1,126 +1,110 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { Colors } from "../../theme/colors";
+import { Colors, Shadow } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
-import { Typography } from "../../theme/typography";
-import HomeCard from "./HomeCard";
 
 type QuickActionGridProps = {
   navigation: any;
 };
 
-export default function QuickActionGrid({
-  navigation,
-}: QuickActionGridProps) {
+type ActionItem = {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  bgColor: string;
+  iconColor: string;
+  onPress: () => void;
+};
+
+export default function QuickActionGrid({ navigation }: QuickActionGridProps) {
+  const actions: ActionItem[] = [
+    {
+      icon: "add-circle",
+      label: "Add Task",
+      bgColor: Colors.primaryLight,
+      iconColor: Colors.primaryDark,
+      onPress: () => navigation.navigate("AddTask"),
+    },
+    {
+      icon: "timer",
+      label: "Pomodoro",
+      bgColor: Colors.warningLight,
+      iconColor: Colors.warning,
+      onPress: () => navigation.navigate("Pomodoro"),
+    },
+    {
+      icon: "sparkles",
+      label: "AI Assistant",
+      bgColor: "#EDE9FE",
+      iconColor: "#7C3AED",
+      onPress: () => {},
+    },
+  ];
+
   return (
-    <HomeCard style={styles.container}>
-      <Text style={styles.title}>
-        Quick Action
-      </Text>
-
+    <View style={styles.card}>
+      <Text style={styles.sectionTitle}>Quick Actions</Text>
       <View style={styles.grid}>
-        <Pressable
-          style={styles.card}
-          onPress={() =>
-            navigation.navigate("AddTask")
-          }
-        >
-          <Ionicons
-            name="add-circle"
-            size={28}
-            color={Colors.text}
-            style={styles.icon}
-          />
-          <Text style={styles.label}>
-            Add Task
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={styles.card}
-          onPress={() => {}}
-        >
-          <Ionicons
-            name="timer"
-            size={28}
-            color={Colors.text}
-            style={styles.icon}
-          />
-          <Text style={styles.label}>
-            Pomodoro
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={styles.card}
-          onPress={() => {}}
-        >
-          <Ionicons
-            name="sparkles"
-            size={28}
-            color={Colors.text}
-            style={styles.icon}
-          />
-          <Text style={styles.label}>
-            AI Assistant
-          </Text>
-        </Pressable>
+        {actions.map((item) => (
+          <Pressable
+            key={item.label}
+            style={({ pressed }) => [
+              styles.item,
+              pressed && { opacity: 0.75 },
+            ]}
+            onPress={item.onPress}
+          >
+            <View style={[styles.iconWrap, { backgroundColor: item.bgColor }]}>
+              <Ionicons name={item.icon} size={26} color={item.iconColor} />
+            </View>
+            <Text style={styles.label}>{item.label}</Text>
+          </Pressable>
+        ))}
       </View>
-    </HomeCard>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: Spacing.lg,
+  card: {
+    backgroundColor: Colors.surface,
+    borderRadius: 24,
+    padding: Spacing.lg,
+    ...Shadow.sm,
+    gap: Spacing.md,
   },
 
-  title: {
-    ...Typography.h3,
+  sectionTitle: {
+    fontSize: 15,
+    fontWeight: "700",
     color: Colors.text,
-    marginBottom: Spacing.md,
   },
 
   grid: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 10,
   },
 
-  card: {
+  item: {
     flex: 1,
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    paddingVertical: Spacing.lg,
-    marginHorizontal: 4,
     alignItems: "center",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-
-    elevation: 3,
+    gap: 8,
   },
 
-  icon: {
-    marginBottom: Spacing.sm,
+  iconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: Radius.lg,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   label: {
-    ...Typography.caption,
+    fontSize: 12,
+    fontWeight: "600",
     color: Colors.text,
     textAlign: "center",
-    fontWeight: "600",
   },
 });

@@ -11,10 +11,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { Task } from "../../context/TaskContext";
 import { usePomodoro } from "../../context/PomodoroContext";
 
-import { Colors } from "../../theme/colors";
+import { Colors, Shadow } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
-import { Typography } from "../../theme/typography";
 
 import { getDeadlineStatus } from "../../utils/deadline";
 
@@ -35,10 +34,7 @@ export default function TaskCard({
 }: Props) {
   const { startFocus } = usePomodoro();
 
-  const status = getDeadlineStatus(
-    task.deadline,
-    task.deadlineTime
-  );
+  const status = getDeadlineStatus(task.deadline, task.deadlineTime);
 
   const handleStartFocus = () => {
     if (task.completed) return;
@@ -56,90 +52,85 @@ export default function TaskCard({
     onStartFocus();
   };
 
+  const statusBgColor = status.color + "18";
+
   return (
     <TouchableOpacity
-      activeOpacity={0.9}
-      style={styles.card}
+      activeOpacity={0.85}
+      style={[styles.card, task.completed && styles.cardCompleted]}
       onPress={onPress}
     >
+      {/* Left: Checkbox */}
       <TouchableOpacity
         onPress={onToggle}
-        style={styles.checkbox}
+        style={styles.checkboxWrap}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons
-          name={
-            task.completed
-              ? "checkmark-circle"
-              : "ellipse-outline"
-          }
-          size={24}
-          color={
-            task.completed
-              ? Colors.success
-              : Colors.textSecondary
-          }
-        />
+        <View
+          style={[
+            styles.checkbox,
+            task.completed && styles.checkboxChecked,
+          ]}
+        >
+          {task.completed && (
+            <Ionicons name="checkmark" size={14} color="#fff" />
+          )}
+        </View>
       </TouchableOpacity>
 
+      {/* Center: Content */}
       <View style={styles.content}>
         <Text
-          style={[
-            styles.title,
-            task.completed &&
-              styles.completed,
-          ]}
+          style={[styles.title, task.completed && styles.titleCompleted]}
+          numberOfLines={2}
         >
           {task.taskName}
         </Text>
 
-        <Text style={styles.course}>
-          {task.course}
-        </Text>
+        {!!task.course && (
+          <Text style={styles.course} numberOfLines={1}>
+            {task.course}
+          </Text>
+        )}
 
-        <Text style={styles.deadline}>
-          {task.deadline}
-        </Text>
-
-        <Text style={styles.time}>
-          {task.deadlineTime}
-        </Text>
-
-        <Text
-          style={[
-            styles.status,
-            {
-              color: status.color,
-            },
-          ]}
-        >
-          {status.text}
-        </Text>
+        <View style={styles.meta}>
+          <Ionicons name="time-outline" size={12} color={Colors.textSecondary} />
+          <Text style={styles.metaText}>
+            {task.deadline} · {task.deadlineTime}
+          </Text>
+        </View>
 
         {!task.completed && (
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={(event) => {
-              event.stopPropagation();
-              handleStartFocus();
-            }}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.actionButtonText}>
-              Start Focus Session
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.bottomRow}>
+            <View style={[styles.statusBadge, { backgroundColor: statusBgColor }]}>
+              <Text style={[styles.statusText, { color: status.color }]}>
+                {status.text}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.focusBtn}
+              onPress={(e) => {
+                e.stopPropagation();
+                handleStartFocus();
+              }}
+              activeOpacity={0.8}
+              hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+            >
+              <Ionicons name="timer-outline" size={13} color={Colors.primary} />
+              <Text style={styles.focusBtnText}>Focus</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 
+      {/* Right: Delete */}
       <TouchableOpacity
-        style={styles.deleteButton}
+        style={styles.deleteBtn}
         onPress={onDelete}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons
-          name="trash-outline"
-          size={22}
-          color={Colors.danger}
-        />
+        <Ionicons name="trash-outline" size={18} color={Colors.textTertiary} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -148,77 +139,110 @@ export default function TaskCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.surface,
-    paddingVertical: 16,
-    paddingHorizontal: Spacing.lg,
+    borderRadius: 16,
+    padding: Spacing.md,
     flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6", // Lighter gray for thin divider
+    alignItems: "flex-start",
+    ...Shadow.sm,
+    marginBottom: 8,
+  },
+
+  cardCompleted: {
+    opacity: 0.65,
+  },
+
+  checkboxWrap: {
+    marginRight: 12,
+    marginTop: 2,
   },
 
   checkbox: {
-    marginRight: 16,
+    width: 22,
+    height: 22,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: Colors.border,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  checkboxChecked: {
+    backgroundColor: Colors.success,
+    borderColor: Colors.success,
   },
 
   content: {
     flex: 1,
+    gap: 4,
   },
 
   title: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: "700",
     color: Colors.text,
+    lineHeight: 21,
   },
 
-  completed: {
+  titleCompleted: {
     textDecorationLine: "line-through",
     color: Colors.textSecondary,
   },
 
   course: {
-    marginTop: 3,
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.textSecondary,
   },
 
-  deadline: {
-    marginTop: 8,
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.primary,
-  },
-
-  time: {
+  meta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     marginTop: 2,
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.primary,
   },
 
-  status: {
-    marginTop: 6,
+  metaText: {
     fontSize: 12,
-    fontWeight: "700",
+    color: Colors.textSecondary,
   },
 
-  actionButton: {
-    marginTop: Spacing.sm,
-    alignSelf: "flex-start",
-    borderWidth: 1,
-    borderColor: Colors.primary,
+  bottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 6,
+  },
+
+  statusBadge: {
     borderRadius: Radius.full,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
 
-  actionButtonText: {
-    ...Typography.caption,
-    color: Colors.primary,
+  statusText: {
+    fontSize: 11,
     fontWeight: "700",
   },
 
-  deleteButton: {
-    padding: 10,
+  focusBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    borderWidth: 1,
+    borderColor: Colors.primary + "60",
+    borderRadius: Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+
+  focusBtnText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: Colors.primary,
+  },
+
+  deleteBtn: {
+    padding: 4,
     marginLeft: 8,
+    marginTop: 2,
   },
 });

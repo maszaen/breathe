@@ -1,99 +1,94 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import { useTask } from "../../context/TaskContext";
 import { calculateMentalHealth } from "../../utils/mentalHealth";
 
-import { Colors } from "../../theme/colors";
+import { Colors, Shadow } from "../../theme/colors";
+import { Radius } from "../../theme/radius";
+import { Spacing } from "../../theme/spacing";
 
 export default function MentalHealthMeter() {
-
   const { tasks } = useTask();
-
-  const {
-    percentage,
-    status,
-    color,
-  } = calculateMentalHealth(tasks);
+  const { percentage, status, color } = calculateMentalHealth(tasks);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.card, { backgroundColor: color }]}>
+      <View style={styles.topRow}>
+        <View>
+          <Text style={styles.label}>Your Score</Text>
+          <Text style={styles.score}>{percentage}%</Text>
+        </View>
+        <View style={styles.iconCircle}>
+          <Ionicons name="heart" size={32} color="#fff" />
+        </View>
+      </View>
 
-      <Text style={styles.title}>
-        Mental Health
-      </Text>
-
-      <Text style={styles.score}>
-        {percentage}%
-      </Text>
-
-      <View style={styles.bar}>
+      <View style={styles.barTrack}>
         <View
           style={[
-            styles.fill,
-            {
-              width: `${percentage}%`,
-              backgroundColor: color,
-            },
+            styles.barFill,
+            { width: `${percentage}%` as any },
           ]}
         />
       </View>
 
-      <Text
-        style={[
-          styles.status,
-          {
-            color,
-          },
-        ]}
-      >
-        {status}
-      </Text>
-
+      <Text style={styles.status}>{status}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-
-  container: {
-    alignItems: "center",
+  card: {
+    borderRadius: 20,
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+    ...Shadow.sm,
   },
 
-  title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.text,
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+
+  label: {
+    fontSize: 13,
+    color: "rgba(255,255,255,0.8)",
+    fontWeight: "500",
+    marginBottom: 4,
   },
 
   score: {
-    marginTop: 10,
-    fontSize: 42,
-    fontWeight: "700",
-    color: Colors.primary,
+    fontSize: 44,
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
 
-  bar: {
-    width: "100%",
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: "#E5E7EB",
-    marginTop: 14,
+  iconCircle: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderRadius: Radius.full,
+    padding: 12,
+  },
+
+  barTrack: {
+    height: 8,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    borderRadius: Radius.full,
     overflow: "hidden",
+    marginTop: 4,
   },
 
-  fill: {
+  barFill: {
     height: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: Radius.full,
   },
 
   status: {
-    marginTop: 12,
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#FFFFFF",
   },
-
 });

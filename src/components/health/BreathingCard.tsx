@@ -1,68 +1,79 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-import { Colors } from "../../theme/colors";
+import { Colors, Shadow } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
-import { Typography } from "../../theme/typography";
 
 export default function BreathingCard() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        Breathing Exercise
-      </Text>
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <View style={styles.iconWrap}>
+          <Ionicons name="leaf" size={18} color={Colors.success} />
+        </View>
+        <Text style={styles.title}>Breathing Exercise</Text>
+      </View>
 
       <Text style={styles.description}>
         Take a calm pause and reset your focus with a short breathing session.
       </Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.85}
-      >
-        <Text style={styles.buttonText}>
-          Start Session
-        </Text>
+      <TouchableOpacity style={styles.button} activeOpacity={0.85}>
+        <Ionicons name="play-circle" size={20} color="#fff" />
+        <Text style={styles.buttonText}>Start Session</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  card: {
     backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
+    borderRadius: 20,
     padding: Spacing.lg,
-    gap: Spacing.sm,
+    gap: Spacing.md,
+    ...Shadow.sm,
+  },
+
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+
+  iconWrap: {
+    backgroundColor: Colors.successLight,
+    borderRadius: Radius.full,
+    padding: 7,
   },
 
   title: {
-    ...Typography.h3,
+    fontSize: 15,
+    fontWeight: "700",
     color: Colors.text,
   },
 
   description: {
-    ...Typography.body,
+    fontSize: 14,
     color: Colors.textSecondary,
-    lineHeight: 22,
+    lineHeight: 21,
   },
 
   button: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.success,
     borderRadius: Radius.lg,
-    paddingVertical: Spacing.md,
+    paddingVertical: 13,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
 
   buttonText: {
-    ...Typography.body,
-    color: Colors.surface,
+    fontSize: 15,
+    color: "#FFFFFF",
     fontWeight: "700",
   },
 });

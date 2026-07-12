@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Image,
-} from "react-native";
+import { ScrollView, StyleSheet, View, Text } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,9 +15,7 @@ import { useTask } from "../../context/TaskContext";
 import { Colors } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
 
-export default function HomeScreen({
-  navigation,
-}: any) {
+export default function HomeScreen({ navigation }: any) {
   const { tasks } = useTask();
 
   return (
@@ -30,33 +24,21 @@ export default function HomeScreen({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <Image
-          source={require("../../assets/images/breathe-logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <View style={styles.pageHeader}>
+          <Text style={styles.brandName}>breathe</Text>
+        </View>
 
         <WelcomeCard />
 
-        <MentalHealthCard
-          tasks={tasks}
-        />
+        <MentalHealthCard tasks={tasks} />
 
-        <UpcomingDeadlineCard
-          tasks={tasks}
-        />
+        <UpcomingDeadlineCard tasks={tasks} />
 
-        <QuickActionGrid
-          navigation={navigation}
-        />
+        <QuickActionGrid navigation={navigation} />
 
-        <FunBreakCard
-          navigation={navigation}
-        />
+        <FunBreakCard navigation={navigation} />
 
-        <TipsCard
-          tasks={tasks}
-        />
+        <TipsCard tasks={tasks} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -69,14 +51,21 @@ const styles = StyleSheet.create({
   },
 
   content: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
     paddingBottom: 120,
-    backgroundColor: Colors.background,
+    gap: 12,
   },
 
-  logo: {
-    width: 200,
-    height: 60,
-    alignSelf: "center",
-    marginVertical: Spacing.lg,
+  pageHeader: {
+    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.xs,
+  },
+
+  brandName: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: Colors.primary,
+    letterSpacing: -0.5,
   },
 });

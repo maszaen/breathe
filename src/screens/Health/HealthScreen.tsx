@@ -1,37 +1,14 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
-import { Typography } from "../../theme/typography";
 import MentalHealthMeter from "../../components/health/MentalHealthMeter";
 import AnalysisCard from "../../components/health/AnalysisCard";
 import RecommendationCard from "../../components/health/RecommendationCard";
 import BreathingCard from "../../components/health/BreathingCard";
-
-function HealthSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-      </View>
-      <View style={styles.card}>{children}</View>
-    </View>
-  );
-}
 
 export default function HealthScreen() {
   return (
@@ -42,23 +19,13 @@ export default function HealthScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Health</Text>
+          <Text style={styles.subtitle}>Track your mental wellness</Text>
         </View>
 
-        <HealthSection title="Mental Health Meter">
-          <MentalHealthMeter />
-        </HealthSection>
-
-        <HealthSection title="Analysis">
-          <AnalysisCard />
-        </HealthSection>
-
-        <HealthSection title="Recommendation">
-          <RecommendationCard />
-        </HealthSection>
-
-        <HealthSection title="Breathing Exercise">
-          <BreathingCard />
-        </HealthSection>
+        <MentalHealthMeter />
+        <AnalysisCard />
+        <RecommendationCard />
+        <BreathingCard />
       </ScrollView>
     </SafeAreaView>
   );
@@ -71,42 +38,27 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    paddingBottom: Spacing.xl * 2,
-    backgroundColor: Colors.background,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    paddingBottom: 120,
+    gap: 12,
   },
 
   header: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
-    marginBottom: Spacing.sm,
+    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.xs,
   },
 
   title: {
-    ...Typography.h1,
-    color: Colors.primary,
-  },
-
-  section: {
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
-    marginBottom: Spacing.md,
-  },
-
-  sectionHeader: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
-  },
-
-  sectionTitle: {
-    ...Typography.h3,
+    fontSize: 28,
+    fontWeight: "800",
     color: Colors.text,
+    letterSpacing: -0.5,
   },
 
-  card: {
-    padding: Spacing.lg,
+  subtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
 });

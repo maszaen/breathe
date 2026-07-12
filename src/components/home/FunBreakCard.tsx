@@ -1,121 +1,110 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { Colors } from "../../theme/colors";
+import { Colors, Shadow } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
-import { Typography } from "../../theme/typography";
-import HomeCard from "./HomeCard";
 
 type FunBreakCardProps = {
   navigation: any;
 };
 
-export default function FunBreakCard({
-  navigation,
-}: FunBreakCardProps) {
+type BreakItem = {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  bgColor: string;
+  iconColor: string;
+  onPress: () => void;
+};
+
+export default function FunBreakCard({ navigation }: FunBreakCardProps) {
+  const items: BreakItem[] = [
+    {
+      icon: "game-controller",
+      label: "Games",
+      bgColor: "#FEE2E2",
+      iconColor: "#DC2626",
+      onPress: () => navigation.navigate("Fun Break"),
+    },
+    {
+      icon: "musical-notes",
+      label: "Music",
+      bgColor: "#D1FAE5",
+      iconColor: "#059669",
+      onPress: () => {},
+    },
+    {
+      icon: "videocam",
+      label: "Videos",
+      bgColor: "#FEF3C7",
+      iconColor: "#D97706",
+      onPress: () => {},
+    },
+  ];
+
   return (
-    <HomeCard style={styles.container}>
-      <Text style={styles.title}>
-        Fun Break
-      </Text>
-
+    <View style={styles.card}>
+      <Text style={styles.sectionTitle}>Fun Break</Text>
       <View style={styles.grid}>
-        <Pressable
-          style={styles.card}
-          onPress={() => navigation.navigate("Fun Break")}
-        >
-          <Ionicons
-            name="game-controller"
-            size={28}
-            color={Colors.text}
-            style={styles.icon}
-          />
-
-          <Text style={styles.label}>
-            Games
-          </Text>
-        </Pressable>
-
-        <Pressable style={styles.card}>
-          <Ionicons
-            name="musical-notes"
-            size={28}
-            color={Colors.text}
-            style={styles.icon}
-          />
-
-          <Text style={styles.label}>
-            Music
-          </Text>
-        </Pressable>
-
-        <Pressable style={styles.card}>
-          <Ionicons
-            name="videocam"
-            size={28}
-            color={Colors.text}
-            style={styles.icon}
-          />
-
-          <Text style={styles.label}>
-            Videos
-          </Text>
-        </Pressable>
+        {items.map((item) => (
+          <Pressable
+            key={item.label}
+            style={({ pressed }) => [
+              styles.item,
+              pressed && { opacity: 0.75 },
+            ]}
+            onPress={item.onPress}
+          >
+            <View style={[styles.iconWrap, { backgroundColor: item.bgColor }]}>
+              <Ionicons name={item.icon} size={26} color={item.iconColor} />
+            </View>
+            <Text style={styles.label}>{item.label}</Text>
+          </Pressable>
+        ))}
       </View>
-    </HomeCard>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: Spacing.lg,
+  card: {
+    backgroundColor: Colors.surface,
+    borderRadius: 24,
+    padding: Spacing.lg,
+    ...Shadow.sm,
+    gap: Spacing.md,
   },
 
-  title: {
-    ...Typography.h3,
+  sectionTitle: {
+    fontSize: 15,
+    fontWeight: "700",
     color: Colors.text,
-    marginBottom: Spacing.md,
   },
 
   grid: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 10,
   },
 
-  card: {
+  item: {
     flex: 1,
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    paddingVertical: Spacing.lg,
-    marginHorizontal: 4,
     alignItems: "center",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-
-    elevation: 3,
+    gap: 8,
   },
 
-  icon: {
-    marginBottom: Spacing.sm,
+  iconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: Radius.lg,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   label: {
-    ...Typography.caption,
+    fontSize: 12,
+    fontWeight: "600",
     color: Colors.text,
     textAlign: "center",
-    fontWeight: "600",
   },
 });
