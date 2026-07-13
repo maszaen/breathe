@@ -12,6 +12,8 @@ All notable changes to the **BREATHE** project between the initial commit and th
 - **EAS Configuration**: Added `eas.json` to support Expo Application Services builds for Android (`apk`) and iOS.
 - **Dummy Data Utilities**: Created `dummyTasks.ts` to help with development and UI testing.
 
+---
+
 ### 💅 Redesigned (UI/UX Improvements)
 - **Gestalt Principles (Flat UI Paradigm)**: Completely overhauled the UI architecture to utilize edge-to-edge layouts, eliminating unnecessary heavy "floating cards" and shadows that cluttered small mobile screens.
 - **Task Screen Refactor**: 
@@ -23,6 +25,8 @@ All notable changes to the **BREATHE** project between the initial commit and th
 - **Health Screen Enhancements**: Flattened section wrappers to make the Mental Health Meter, Analysis, and Recommendations flow naturally down the page. Connected these components to dynamic health color logic.
 - **Pomodoro Screen Redesign**: Refactored the Pomodoro timer UI to match the new premium design language.
 - **Modern Theme Palette**: Updated `colors.ts` with a premium, softer color palette (Cyan/Blue primary) and refined shadow constraints (`Shadow.sm`, `Shadow.md`).
+
+---
 
 ### 🐛 Fixed (Bug Fixes & Optimizations)
 - **SafeAreaView Deprecation**: Migrated `SafeAreaView` imports from `react-native` to `react-native-safe-area-context` to prevent runtime warnings.
