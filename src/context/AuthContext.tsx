@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { User, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
+import { User, onAuthStateChanged, signOut as firebaseSignOut } from '@react-native-firebase/auth';
 import { auth } from "../config/firebase";
 
 type AuthContextType = {

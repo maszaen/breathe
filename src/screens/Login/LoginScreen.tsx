@@ -7,7 +7,8 @@ import {
   View,
   Alert,
 } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from "@react-native-firebase/auth";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { auth } from "../../config/firebase";
 
 import AuthLayout from "../../components/layout/AuthLayout";
@@ -24,6 +25,42 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<"Login"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Initialize Google Sign-In
+  React.useEffect(() => {
+    GoogleSignin.configure({
+      // TODO: Replace with your actual Web Client ID from Firebase Console
+      // webClientId: "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com",
+    });
+  }, []);
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      // Get the users ID token
+      const signInResult = await GoogleSignin.signIn();
+      
+      // Try to get the idToken
+      let idToken = signInResult.data?.idToken;
+      if (!idToken) {
+        throw new Error('No ID token found');
+      }
+
+      // Create a Google credential with the token
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+
+      // Sign-in the user with the credential
+      await signInWithCredential(auth, googleCredential);
+      
+      navigation.replace("Main", { screen: "Home" });
+    } catch (error: any) {
+      Alert.alert("Google Login Failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
     if (email.trim() === "" || password.trim() === "") {
@@ -101,15 +138,13 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<"Login"
           </Text>
         </Pressable>
 
-        <Pressable style={styles.socialButton}>
+        <Pressable 
+          style={styles.socialButton}
+          onPress={handleGoogleLogin}
+          disabled={loading}
+        >
           <Text style={styles.socialButtonText}>
-            Continue with Google
-          </Text>
-        </Pressable>
-
-        <Pressable style={styles.socialButton}>
-          <Text style={styles.socialButtonText}>
-            Continue with Apple
+            {loading ? "Please wait..." : "Continue with Google"}
           </Text>
         </Pressable>
       </View>

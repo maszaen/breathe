@@ -6,7 +6,7 @@ import {
   View,
   Alert,
 } from "react-native";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "@react-native-firebase/auth";
 import { auth } from "../../config/firebase";
 
 import AuthLayout from "../../components/layout/AuthLayout";

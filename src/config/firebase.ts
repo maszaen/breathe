@@ -1,15 +1,9 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth } from '@react-native-firebase/auth';
+import { getApp } from '@react-native-firebase/app';
 
-// TODO: Replace with your actual Firebase project configuration
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+// The Google services JSON (Android) and GoogleService-Info.plist (iOS) 
+// are automatically loaded by the native SDK.
+// You no longer need to manually pass the configuration object.
 
-const app = initializeApp(firebaseConfig);
+export const app = getApp();
 export const auth = getAuth(app);
