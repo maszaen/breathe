@@ -6,6 +6,7 @@ import React, {
   useState,
   ReactNode,
 } from "react";
+import * as Notifications from "expo-notifications";
 
 import { POMODORO_DEFAULTS } from "../constants/pomodoro";
 import type { PomodoroSessionType } from "../constants/pomodoro";
@@ -28,12 +29,33 @@ type PomodoroContextType = {
 
 const PomodoroContext = createContext<PomodoroContextType | undefined>(undefined);
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
 export function PomodoroProvider({ children }: { children: ReactNode }) {
   const [activeTaskId, setActiveTaskId] = useState<number | null>(null);
   const [sessionType, setSessionType] = useState<PomodoroSessionType>("idle");
   const [isRunning, setIsRunning] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(POMODORO_DEFAULTS.focusDurationSeconds);
   const [completedFocusSessions, setCompletedFocusSessions] = useState(0);
+
+  useEffect(() => {
+    // Request permissions on mount
+    const requestPermissions = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        await Notifications.requestPermissionsAsync();
+      }
+    };
+    requestPermissions();
+  }, []);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -60,6 +82,25 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [isRunning, sessionType]);
 
+  const scheduleNotification = async (title: string, body: string, seconds: number) => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        sound: true,
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds,
+      },
+    });
+  };
+
+  const cancelNotification = async () => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+  };
+
   const startFocus = (taskId: number | null = null) => {
     if (
       sessionType !== "idle" ||
@@ -73,6 +114,12 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
     setSessionType("focus");
     setIsRunning(true);
     setRemainingSeconds(POMODORO_DEFAULTS.focusDurationSeconds);
+    
+    scheduleNotification(
+      "Focus Session Complete!", 
+      "Time for a break.", 
+      POMODORO_DEFAULTS.focusDurationSeconds
+    );
 
     return true;
   };
@@ -82,6 +129,12 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
     setSessionType("break");
     setIsRunning(true);
     setRemainingSeconds(POMODORO_DEFAULTS.breakDurationSeconds);
+    
+    scheduleNotification(
+      "Break is Over!", 
+      "Let's get back to work.", 
+      POMODORO_DEFAULTS.breakDurationSeconds
+    );
   };
 
   const finishFocus = () => {
@@ -91,15 +144,27 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
     setSessionType("break");
     setRemainingSeconds(POMODORO_DEFAULTS.breakDurationSeconds);
     setIsRunning(true);
+    
+    scheduleNotification(
+      "Break is Over!", 
+      "Let's get back to work.", 
+      POMODORO_DEFAULTS.breakDurationSeconds
+    );
   };
 
   const pauseTimer = () => {
     setIsRunning(false);
+    cancelNotification();
   };
 
   const resumeTimer = () => {
     if (sessionType === "idle") return;
     setIsRunning(true);
+    scheduleNotification(
+      sessionType === "focus" ? "Focus Session Complete!" : "Break is Over!",
+      sessionType === "focus" ? "Time for a break." : "Let's get back to work.",
+      remainingSeconds
+    );
   };
 
   const stopSession = () => {
@@ -107,6 +172,7 @@ export function PomodoroProvider({ children }: { children: ReactNode }) {
     setSessionType("idle");
     setRemainingSeconds(POMODORO_DEFAULTS.focusDurationSeconds);
     setActiveTaskId(null);
+    cancelNotification();
   };
 
   const resetSession = () => {

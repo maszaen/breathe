@@ -11,26 +11,39 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useTask } from "../../context/TaskContext";
+import { useSettings } from "../../context/SettingsContext";
+import { useAuth } from "../../context/AuthContext";
 
 import { Colors, Shadow } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
 import { Typography } from "../../theme/typography";
+import { CommonActions } from "@react-navigation/native";
+import { BottomTabScreenPropsType } from "../../types/navigation";
 
-export default function ProfileScreen({ navigation }: any) {
+export default function ProfileScreen({ navigation }: BottomTabScreenPropsType<"Profile">) {
   const { tasks } = useTask();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isNotifEnabled, setIsNotifEnabled] = useState(true);
-  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const { user, signOut } = useAuth();
+  const {
+    isDarkMode,
+    isNotifEnabled,
+    isSoundEnabled,
+    toggleDarkMode,
+    toggleNotif,
+    toggleSound,
+  } = useSettings();
 
   const completedTasks = tasks.filter((t) => t.completed).length;
   const pendingTasks = tasks.length - completedTasks;
 
-  const handleLogout = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Login" }],
-    });
+  const handleLogout = async () => {
+    await signOut();
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      })
+    );
   };
 
   return (
@@ -48,8 +61,8 @@ export default function ProfileScreen({ navigation }: any) {
               <Ionicons name="person" size={32} color={Colors.primary} />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.name}>Maszaen</Text>
-              <Text style={styles.email}>maszaen@breathe.app</Text>
+              <Text style={styles.name}>{user?.displayName || "Maszaen"}</Text>
+              <Text style={styles.email}>{user?.email || "maszaen@breathe.app"}</Text>
             </View>
           </View>
           
@@ -91,7 +104,7 @@ export default function ProfileScreen({ navigation }: any) {
             </View>
             <Switch
               value={isDarkMode}
-              onValueChange={setIsDarkMode}
+              onValueChange={toggleDarkMode}
               trackColor={{ false: "#D1D5DB", true: Colors.primaryLight }}
               thumbColor={isDarkMode ? Colors.primary : "#fff"}
             />
@@ -107,7 +120,7 @@ export default function ProfileScreen({ navigation }: any) {
             </View>
             <Switch
               value={isNotifEnabled}
-              onValueChange={setIsNotifEnabled}
+              onValueChange={toggleNotif}
               trackColor={{ false: "#D1D5DB", true: Colors.primaryLight }}
               thumbColor={isNotifEnabled ? Colors.primary : "#fff"}
             />
@@ -123,7 +136,7 @@ export default function ProfileScreen({ navigation }: any) {
             </View>
             <Switch
               value={isSoundEnabled}
-              onValueChange={setIsSoundEnabled}
+              onValueChange={toggleSound}
               trackColor={{ false: "#D1D5DB", true: Colors.primaryLight }}
               thumbColor={isSoundEnabled ? Colors.primary : "#fff"}
             />

@@ -74,8 +74,9 @@ function SectionHeader({ section, isExpanded, onToggle }: any) {
   );
 }
 
+import { BottomTabScreenPropsType } from "../../types/navigation";
 
-export default function TaskScreen({ navigation }: any) {
+export default function TaskScreen({ navigation }: BottomTabScreenPropsType<"Task">) {
   const { tasks, toggleTask, deleteTask } = useTask();
 
   const [selectedTab, setSelectedTab] = useState("Active");

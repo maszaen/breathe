@@ -8,32 +8,38 @@ import {
 
 import { Colors } from "../../theme/colors";
 
+import { Ionicons } from "@expo/vector-icons";
+
 const moods = [
   {
-    emoji: "😁",
+    icon: "happy",
     label: "Great",
+    color: "#10B981", // Success green
   },
   {
-    emoji: "😊",
+    icon: "happy-outline",
     label: "Happy",
+    color: "#34D399",
   },
   {
-    emoji: "😐",
+    icon: "ellipse-outline",
     label: "Okay",
+    color: "#FBBF24", // Warning yellow
   },
   {
-    emoji: "😔",
+    icon: "sad-outline",
     label: "Sad",
+    color: "#F87171", // Danger light
   },
   {
-    emoji: "😫",
+    icon: "sad",
     label: "Stressed",
+    color: "#EF4444", // Danger
   },
 ];
 
 export default function MoodSelector() {
-  const [selectedMood, setSelectedMood] =
-    useState("");
+  const [selectedMood, setSelectedMood] = useState("");
 
   return (
     <View style={styles.container}>
@@ -41,24 +47,18 @@ export default function MoodSelector() {
         <TouchableOpacity
           key={mood.label}
           activeOpacity={0.8}
-          onPress={() =>
-            setSelectedMood(mood.label)
-          }
+          onPress={() => setSelectedMood(mood.label)}
           style={[
             styles.item,
-            selectedMood === mood.label &&
-              styles.selected,
+            selectedMood === mood.label && styles.selected,
           ]}
         >
-          <Text style={styles.emoji}>
-            {mood.emoji}
-          </Text>
+          <Ionicons name={mood.icon as any} size={34} color={selectedMood === mood.label ? mood.color : Colors.textSecondary} />
 
           <Text
             style={[
               styles.label,
-              selectedMood === mood.label &&
-                styles.selectedLabel,
+              selectedMood === mood.label && styles.selectedLabel,
             ]}
           >
             {mood.label}
@@ -84,10 +84,6 @@ const styles = StyleSheet.create({
 
   selected: {
     backgroundColor: "#EEF6FF",
-  },
-
-  emoji: {
-    fontSize: 34,
   },
 
   label: {

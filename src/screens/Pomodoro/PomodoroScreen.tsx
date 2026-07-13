@@ -16,10 +16,9 @@ import { usePomodoro } from "../../context/PomodoroContext";
 import { Colors, Shadow } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
+import { RootStackScreenProps } from "../../types/navigation";
 
-type Props = {
-  navigation: any;
-};
+type Props = RootStackScreenProps<"Pomodoro">;
 
 function formatTime(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);

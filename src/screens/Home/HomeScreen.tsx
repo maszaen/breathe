@@ -12,8 +12,9 @@ import { useTask } from "../../context/TaskContext";
 
 import { Colors, Shadow } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
+import { BottomTabScreenPropsType } from "../../types/navigation";
 
-export default function HomeScreen({ navigation }: any) {
+export default function HomeScreen({ navigation }: BottomTabScreenPropsType<"Home">) {
   const { tasks } = useTask();
 
   return (

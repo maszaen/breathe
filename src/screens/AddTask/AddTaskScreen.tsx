@@ -16,10 +16,10 @@ import { Colors } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
 
 import { useTask } from "../../context/TaskContext";
+import { formatDate, formatTime } from "../../utils/dateUtils";
+import { RootStackScreenProps } from "../../types/navigation";
 
-export default function AddTaskScreen({
-  navigation,
-}: any) {
+export default function AddTaskScreen({ navigation }: RootStackScreenProps<"AddTask">) {
   const { addTask } = useTask();
 
   const [taskName, setTaskName] = useState("");
@@ -36,48 +36,17 @@ export default function AddTaskScreen({
   const [showTimePicker, setShowTimePicker] =
     useState(false);
 
-  const onChangeDate = (
-    event: any,
-    selectedDate?: Date
-  ) => {
+  const onChangeDate = (event: any, selectedDate?: Date) => {
     setShowDatePicker(false);
-
     if (!selectedDate) return;
-
     setDate(selectedDate);
-
-    const day = String(
-      selectedDate.getDate()
-    ).padStart(2, "0");
-
-    const month = String(
-      selectedDate.getMonth() + 1
-    ).padStart(2, "0");
-
-    const year = selectedDate.getFullYear();
-
-    setDeadline(
-      `${day}/${month}/${year}`
-    );
+    setDeadline(formatDate(selectedDate));
   };
 
-  const onChangeTime = (
-    event: any,
-    selectedTime?: Date
-  ) => {
+  const onChangeTime = (event: any, selectedTime?: Date) => {
     setShowTimePicker(false);
-
     if (!selectedTime) return;
-
-    const hour = String(
-      selectedTime.getHours()
-    ).padStart(2, "0");
-
-    const minute = String(
-      selectedTime.getMinutes()
-    ).padStart(2, "0");
-
-    setDeadlineTime(`${hour}:${minute}`);
+    setDeadlineTime(formatTime(selectedTime));
   };
 
   const handleSave = () => {

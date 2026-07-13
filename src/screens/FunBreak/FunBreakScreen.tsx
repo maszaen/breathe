@@ -10,6 +10,7 @@ import {
   Pressable,
   Animated,
   TextInput,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -24,24 +25,24 @@ import { Typography } from "../../theme/typography";
 // -- DUMMY DATA --
 const MODAL_DATA: any = {
   Games: [
-    { id: "1", title: "Mobile Legends", img: "https://ui-avatars.com/api/?name=ML&background=0D8ABC&color=fff&size=128" },
-    { id: "2", title: "PUBG Mobile", img: "https://ui-avatars.com/api/?name=PUBG&background=F59E0B&color=fff&size=128" },
-    { id: "3", title: "Minecraft", img: "https://ui-avatars.com/api/?name=MC&background=10B981&color=fff&size=128" },
+    { id: "1", title: "PokéRogue", url: "https://pokerogue.net/", img: "https://ui-avatars.com/api/?name=PR&background=EF4444&color=fff&size=128" },
+    { id: "2", title: "Wordle", url: "https://www.nytimes.com/games/wordle/index.html", img: "https://ui-avatars.com/api/?name=WO&background=10B981&color=fff&size=128" },
+    { id: "3", title: "2048", url: "https://play2048.co/", img: "https://ui-avatars.com/api/?name=20&background=F59E0B&color=fff&size=128" },
   ],
   Music: [
-    { id: "1", title: "Spotify", img: "https://ui-avatars.com/api/?name=SP&background=10B981&color=fff&size=128" },
-    { id: "2", title: "JOOX", img: "https://ui-avatars.com/api/?name=JX&background=10B981&color=fff&size=128" },
-    { id: "3", title: "YouTube Music", img: "https://ui-avatars.com/api/?name=YM&background=EF4444&color=fff&size=128" },
+    { id: "1", title: "Spotify Lofi", url: "https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn", img: "https://ui-avatars.com/api/?name=SP&background=10B981&color=fff&size=128" },
+    { id: "2", title: "Apple Music", url: "https://music.apple.com/", img: "https://ui-avatars.com/api/?name=AM&background=EF4444&color=fff&size=128" },
+    { id: "3", title: "YouTube Music", url: "https://music.youtube.com/", img: "https://ui-avatars.com/api/?name=YM&background=EF4444&color=fff&size=128" },
   ],
   Videos: [
-    { id: "1", title: "YouTube", img: "https://ui-avatars.com/api/?name=YT&background=EF4444&color=fff&size=128" },
-    { id: "2", title: "TikTok", img: "https://ui-avatars.com/api/?name=TK&background=000&color=fff&size=128" },
-    { id: "3", title: "SnackVideo", img: "https://ui-avatars.com/api/?name=SV&background=F59E0B&color=fff&size=128" },
+    { id: "1", title: "YouTube", url: "https://www.youtube.com/", img: "https://ui-avatars.com/api/?name=YT&background=EF4444&color=fff&size=128" },
+    { id: "2", title: "TikTok", url: "https://www.tiktok.com/", img: "https://ui-avatars.com/api/?name=TK&background=000&color=fff&size=128" },
+    { id: "3", title: "Twitch", url: "https://www.twitch.tv/", img: "https://ui-avatars.com/api/?name=TW&background=8B5CF6&color=fff&size=128" },
   ],
   Relaxation: [
-    { id: "1", title: "Deep Breathing", icon: "leaf" },
-    { id: "2", title: "Stretching", icon: "body" },
-    { id: "3", title: "Meditation", icon: "water" },
+    { id: "1", title: "Breathing Guide", url: "https://www.headspace.com/meditation/breathing-exercises", icon: "leaf" },
+    { id: "2", title: "Stretching Routine", url: "https://www.youtube.com/watch?v=g_tea8ZNk5A", icon: "body" },
+    { id: "3", title: "Meditation Timer", url: "https://insighttimer.com/", icon: "water" },
   ],
 };
 
@@ -57,8 +58,9 @@ function formatTime(totalSeconds: number) {
   const seconds = totalSeconds % 60;
   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
+import { BottomTabScreenPropsType } from "../../types/navigation";
 
-export default function FunBreakScreen({ navigation }: any) {
+export default function FunBreakScreen({ navigation }: BottomTabScreenPropsType<"Fun Break">) {
   const { sessionType, isRunning, remainingSeconds } = usePomodoro();
   
   const [modalVisible, setModalVisible] = useState(false);
@@ -341,7 +343,16 @@ export default function FunBreakScreen({ navigation }: any) {
 
             <ScrollView contentContainerStyle={styles.modalList}>
               {activeCategory && MODAL_DATA[activeCategory]?.map((item: any) => (
-                <TouchableOpacity key={item.id} style={styles.listItem} activeOpacity={0.7}>
+                <TouchableOpacity 
+                  key={item.id} 
+                  style={styles.listItem} 
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    if (item.url) {
+                      Linking.openURL(item.url).catch(err => console.error("Couldn't load page", err));
+                    }
+                  }}
+                >
                   {item.img ? (
                     <Image source={{ uri: item.img }} style={styles.listImage} />
                   ) : (
@@ -350,7 +361,7 @@ export default function FunBreakScreen({ navigation }: any) {
                     </View>
                   )}
                   <Text style={styles.listTitle}>{item.title}</Text>
-                  <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
+                  <Ionicons name="open-outline" size={16} color={Colors.textTertiary} />
                 </TouchableOpacity>
               ))}
             </ScrollView>

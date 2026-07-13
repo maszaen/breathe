@@ -9,8 +9,9 @@ import HealthScreen from "../screens/Health/HealthScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 
 import { Colors } from "../theme/colors";
+import { BottomTabParamList } from "../types/navigation";
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomTabNavigator() {
   const insets = useSafeAreaInsets();

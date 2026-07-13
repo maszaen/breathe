@@ -12,16 +12,19 @@ import { Radius } from "../../theme/radius";
 type PrimaryButtonProps = {
   title: string;
   onPress: () => void;
+  disabled?: boolean;
 };
 
 export default function PrimaryButton({
   title,
   onPress,
+  disabled = false,
 }: PrimaryButtonProps) {
   return (
     <Pressable
-      style={styles.button}
+      style={[styles.button, disabled && styles.disabled]}
       onPress={onPress}
+      disabled={disabled}
     >
       <Text style={styles.text}>
         {title}
@@ -47,9 +50,10 @@ const styles = StyleSheet.create({
 
   text: {
     color: "#FFFFFF",
-
     fontSize: 16,
-
     fontWeight: "700",
+  },
+  disabled: {
+    opacity: 0.6,
   },
 });

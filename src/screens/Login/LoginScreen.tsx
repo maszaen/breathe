@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   Pressable,
   StyleSheet,
   Text,
   View,
+  Alert,
 } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebase";
 
 import AuthLayout from "../../components/layout/AuthLayout";
 import AuthHeader from "../../components/layout/AuthHeader";
@@ -15,8 +18,31 @@ import PrimaryButton from "../../components/buttons/PrimaryButton";
 import { Colors } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
 import { Typography } from "../../theme/typography";
+import { RootStackScreenProps } from "../../types/navigation";
 
-export default function LoginScreen({ navigation }: any) {
+export default function LoginScreen({ navigation }: RootStackScreenProps<"Login">) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (email.trim() === "" || password.trim() === "") {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // Wait for AuthContext to pick up the state change, or simply replace to Main
+      navigation.replace("Main", { screen: "Home" });
+    } catch (error: any) {
+      Alert.alert("Login Failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthLayout>
       <View style={styles.logoContainer}>
@@ -33,11 +59,19 @@ export default function LoginScreen({ navigation }: any) {
       />
 
       <View style={styles.form}>
-        <CustomTextInput placeholder="Email" />
+        <CustomTextInput 
+          placeholder="Email" 
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
 
         <CustomTextInput
           placeholder="Password"
           secureTextEntry
+          value={password}
+          onChangeText={setPassword}
         />
 
         <Pressable>
@@ -47,8 +81,9 @@ export default function LoginScreen({ navigation }: any) {
         </Pressable>
 
         <PrimaryButton
-          title="Sign In"
-          onPress={() => navigation.replace("Main")}
+          title={loading ? "Signing in..." : "Sign In"}
+          onPress={handleLogin}
+          disabled={loading}
         />
 
         <View style={styles.dividerContainer}>

@@ -10,8 +10,9 @@ import EditTaskScreen from "../screens/EditTask/EditTaskScreen";
 import PomodoroScreen from "../screens/Pomodoro/PomodoroScreen";
 
 import BottomTabNavigator from "./BottomTabNavigator";
+import { RootStackParamList } from "../types/navigation";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (

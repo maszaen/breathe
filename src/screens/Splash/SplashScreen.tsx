@@ -6,10 +6,9 @@ import {
 } from "react-native";
 
 import { Colors } from "../../theme/colors";
+import { RootStackScreenProps } from "../../types/navigation";
 
-export default function SplashScreen({
-  navigation,
-}: any) {
+export default function SplashScreen({ navigation }: RootStackScreenProps<"Splash">) {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace("Login");
