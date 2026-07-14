@@ -161,7 +161,7 @@ export default function AIAssistantScreen({ navigation }: RootStackScreenProps<"
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      {/* Header */}
+      {/* Header — sama seperti Pomodoro Screen */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
@@ -171,8 +171,8 @@ export default function AIAssistantScreen({ navigation }: RootStackScreenProps<"
           <Ionicons name="chevron-back" size={22} color={Colors.primary} />
         </TouchableOpacity>
         <View style={styles.headerText}>
-          <Text style={styles.headerTitle}>BREATHE AI</Text>
-          <Text style={styles.headerSub}>Always here to help</Text>
+          <Text style={styles.headerTitle}>AI Assistant</Text>
+          <Text style={styles.headerSub}>Tanyakan apa saja.</Text>
         </View>
       </View>
 
@@ -192,24 +192,31 @@ export default function AIAssistantScreen({ navigation }: RootStackScreenProps<"
               <View
                 key={msg.id}
                 style={[
-                  styles.messageBubble,
-                  msg.sender === "user" ? styles.messageUser : styles.messageAI,
+                  styles.messageRow,
+                  msg.sender === "user" ? styles.messageRowUser : styles.messageRowAI,
                 ]}
               >
                 {msg.sender === "ai" && (
-                  <View style={styles.aiIconWrap}>
-                    <Ionicons name="sparkles" size={12} color="#fff" />
+                  <View style={styles.aiAvatar}>
+                    <Ionicons name="sparkles" size={11} color="#fff" />
                   </View>
                 )}
-                {msg.text === "..." ? (
-                  <View style={styles.typingIndicator}>
-                     <View style={styles.typingDot} />
-                     <View style={[styles.typingDot, { opacity: 0.6 }]} />
-                     <View style={[styles.typingDot, { opacity: 0.3 }]} />
-                  </View>
-                ) : (
-                  <MinimalMarkdown text={msg.text} isUser={msg.sender === "user"} />
-                )}
+                <View
+                  style={[
+                    styles.messageBubble,
+                    msg.sender === "user" ? styles.messageUser : styles.messageAI,
+                  ]}
+                >
+                  {msg.text === "..." ? (
+                    <View style={styles.typingIndicator}>
+                       <View style={styles.typingDot} />
+                       <View style={[styles.typingDot, { opacity: 0.5 }]} />
+                       <View style={[styles.typingDot, { opacity: 0.25 }]} />
+                    </View>
+                  ) : (
+                    <MinimalMarkdown text={msg.text} isUser={msg.sender === "user"} />
+                  )}
+                </View>
               </View>
             ))}
           </ScrollView>
@@ -252,24 +259,31 @@ export default function AIAssistantScreen({ navigation }: RootStackScreenProps<"
               <View
                 key={msg.id}
                 style={[
-                  styles.messageBubble,
-                  msg.sender === "user" ? styles.messageUser : styles.messageAI,
+                  styles.messageRow,
+                  msg.sender === "user" ? styles.messageRowUser : styles.messageRowAI,
                 ]}
               >
                 {msg.sender === "ai" && (
-                  <View style={styles.aiIconWrap}>
-                    <Ionicons name="sparkles" size={12} color="#fff" />
+                  <View style={styles.aiAvatar}>
+                    <Ionicons name="sparkles" size={11} color="#fff" />
                   </View>
                 )}
-                {msg.text === "..." ? (
-                  <View style={styles.typingIndicator}>
-                     <View style={styles.typingDot} />
-                     <View style={[styles.typingDot, { opacity: 0.6 }]} />
-                     <View style={[styles.typingDot, { opacity: 0.3 }]} />
-                  </View>
-                ) : (
-                  <MinimalMarkdown text={msg.text} isUser={msg.sender === "user"} />
-                )}
+                <View
+                  style={[
+                    styles.messageBubble,
+                    msg.sender === "user" ? styles.messageUser : styles.messageAI,
+                  ]}
+                >
+                  {msg.text === "..." ? (
+                    <View style={styles.typingIndicator}>
+                       <View style={styles.typingDot} />
+                       <View style={[styles.typingDot, { opacity: 0.5 }]} />
+                       <View style={[styles.typingDot, { opacity: 0.25 }]} />
+                    </View>
+                  ) : (
+                    <MinimalMarkdown text={msg.text} isUser={msg.sender === "user"} />
+                  )}
+                </View>
               </View>
             ))}
           </ScrollView>
@@ -307,90 +321,114 @@ export default function AIAssistantScreen({ navigation }: RootStackScreenProps<"
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: "#F0F4F8",
   },
+
+  // ── Header ──────────────────────────────────────────
   header: {
     flexDirection: "row",
     alignItems: "center",
+    gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    backgroundColor: Colors.surface,
-    ...Shadow.sm,
-    zIndex: 10,
+    paddingVertical: Spacing.xs,
+    paddingBottom: Spacing.sm,
+    backgroundColor: Colors.background,
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: Radius.full,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surface,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: Spacing.md,
+    ...Shadow.sm,
   },
   headerText: {
     flex: 1,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "800",
     color: Colors.text,
+    letterSpacing: -0.5,
   },
   headerSub: {
-    fontSize: 12,
+    fontSize: 13,
     color: Colors.textSecondary,
+    marginTop: 1,
   },
+
+  // ── Chat Area ────────────────────────────────────────
   chatArea: {
-    padding: Spacing.md,
+    paddingHorizontal: Spacing.md,
     paddingTop: Spacing.lg,
     paddingBottom: Spacing.xl,
-    gap: Spacing.md,
+    gap: 10,
   },
-  messageBubble: {
-    maxWidth: "85%",
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-  },
-  messageAI: {
-    alignSelf: "flex-start",
-    backgroundColor: "#EDE9FE",
-    borderTopLeftRadius: 4,
+
+  // ── Bubbles ──────────────────────────────────────────
+  messageRow: {
     flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 8,
   },
-  messageUser: {
-    alignSelf: "flex-end",
-    backgroundColor: Colors.primary,
-    borderTopRightRadius: 4,
+  messageRowUser: {
+    justifyContent: "flex-end",
   },
-  aiIconWrap: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+  messageRowAI: {
+    justifyContent: "flex-start",
+  },
+  aiAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: "#7C3AED",
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 8,
-    marginTop: 2,
+    marginBottom: 2,
+    flexShrink: 0,
+  },
+  messageBubble: {
+    maxWidth: "75%",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 18,
+  },
+  messageAI: {
+    backgroundColor: Colors.surface,
+    borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  messageUser: {
+    backgroundColor: Colors.primary,
+    borderBottomRightRadius: 4,
   },
   messageText: {
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 21,
   },
+
+  // ── Typing dots ──────────────────────────────────────
   typingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
-    height: 22,
     paddingHorizontal: 4,
+    paddingVertical: 2,
+    height: 21,
   },
   typingDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#7C3AED",
+    backgroundColor: Colors.textTertiary,
   },
+
+  // ── Input bar ────────────────────────────────────────
   inputWrap: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.sm,
+    paddingTop: 10,
     backgroundColor: Colors.surface,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
@@ -398,29 +436,39 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
-    backgroundColor: Colors.background,
-    borderRadius: Radius.lg,
-    paddingHorizontal: Spacing.sm,
+    backgroundColor: "#F0F4F8",
+    borderRadius: 24,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    paddingLeft: Spacing.md,
+    paddingRight: 6,
     paddingVertical: 6,
+    gap: 6,
+  },
+  inputContainerFocused: {
+    borderColor: Colors.primary,
   },
   input: {
     flex: 1,
-    minHeight: 40,
-    maxHeight: 120,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: Spacing.sm,
+    minHeight: 36,
+    maxHeight: 110,
+    paddingTop: 8,
+    paddingBottom: 8,
     fontSize: 14,
     color: Colors.text,
+    lineHeight: 20,
   },
   sendBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: Colors.primary,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: Spacing.sm,
-    marginBottom: 4,
+    flexShrink: 0,
+  },
+  sendBtnDisabled: {
+    backgroundColor: Colors.border,
   },
 });
+

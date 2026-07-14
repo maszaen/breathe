@@ -1,3 +1,4 @@
+import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import AppNavigator from "./src/navigation/AppNavigator";
@@ -13,6 +14,7 @@ export default function App() {
     <SettingsProvider>
       <AuthProvider>
         <SafeAreaProvider>
+          <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
           <TaskProvider>
             <PomodoroProvider>
               <AppNavigator />
