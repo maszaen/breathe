@@ -6,7 +6,11 @@ import { Colors, Shadow } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
 
-export default function BreathingCard() {
+type Props = {
+  onPress?: () => void;
+};
+
+export default function BreathingCard({ onPress }: Props) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -20,7 +24,7 @@ export default function BreathingCard() {
         Take a calm pause and reset your focus with a short breathing session.
       </Text>
 
-      <TouchableOpacity style={styles.button} activeOpacity={0.85}>
+      <TouchableOpacity style={styles.button} activeOpacity={0.85} onPress={onPress}>
         <Ionicons name="play-circle" size={20} color="#fff" />
         <Text style={styles.buttonText}>Start Session</Text>
       </TouchableOpacity>

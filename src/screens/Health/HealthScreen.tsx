@@ -9,8 +9,9 @@ import MentalHealthMeter from "../../components/health/MentalHealthMeter";
 import AnalysisCard from "../../components/health/AnalysisCard";
 import RecommendationCard from "../../components/health/RecommendationCard";
 import BreathingCard from "../../components/health/BreathingCard";
+import { BottomTabScreenPropsType } from "../../types/navigation";
 
-export default function HealthScreen() {
+export default function HealthScreen({ navigation }: BottomTabScreenPropsType<"Health">) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -25,7 +26,7 @@ export default function HealthScreen() {
         <MentalHealthMeter />
         <AnalysisCard />
         <RecommendationCard />
-        <BreathingCard />
+        <BreathingCard onPress={() => navigation.navigate("Breathing")} />
       </ScrollView>
     </SafeAreaView>
   );

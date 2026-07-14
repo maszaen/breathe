@@ -81,36 +81,28 @@ export default function FunBreakScreen({ navigation }: BottomTabScreenPropsType<
   
   const [modalVisible, setModalVisible] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [detectedApps, setDetectedApps] = useState<Record<string, AppEntry[]>>({});
-  const [detecting, setDetecting] = useState(false);
 
-  // Detect installed apps on mount
-  useEffect(() => {
-    const detect = async () => {
-      setDetecting(true);
-      const result: Record<string, AppEntry[]> = {};
-      for (const [category, apps] of Object.entries(APP_CATALOG)) {
-        const available: AppEntry[] = [];
-        for (const app of apps) {
-          // Always include internal routes and HTTP(S) links (web fallbacks always work)
-          if (app.scheme === "__internal__" || app.scheme.startsWith("http")) {
-            available.push(app);
-          } else {
-            try {
-              const can = await Linking.canOpenURL(app.scheme);
-              if (can) available.push(app);
-            } catch {
-              // skip
-            }
-          }
-        }
-        result[category] = available;
+  // Smart open: try deep link first, fall back to web URL
+  const handleOpenApp = async (app: AppEntry) => {
+    if (app.url === "__breathing__") {
+      closeModal();
+      setTimeout(() => navigation.navigate("Breathing"), 300);
+      return;
+    }
+    // If scheme is http(s), open directly
+    if (app.scheme.startsWith("http") || app.url.startsWith("http")) {
+      Linking.openURL(app.url).catch(() => {});
+      return;
+    }
+    // Try deep link, fall back to web URL
+    try {
+      await Linking.openURL(app.scheme);
+    } catch {
+      if (app.url.startsWith("http")) {
+        Linking.openURL(app.url).catch(() => {});
       }
-      setDetectedApps(result);
-      setDetecting(false);
-    };
-    detect();
-  }, []);
+    }
+  };
 
   // Local Break Timer Logic
   const [breakRunning, setBreakRunning] = useState(false);
@@ -396,48 +388,20 @@ export default function FunBreakScreen({ navigation }: BottomTabScreenPropsType<
             </View>
 
             <ScrollView contentContainerStyle={styles.modalList}>
-              {(() => {
-                const items = detectedApps[activeCategory ?? ""] ?? [];
-                if (detecting) {
-                  return (
-                    <View style={styles.emptyState}>
-                      <Text style={styles.emptyText}>Detecting apps...</Text>
-                    </View>
-                  );
-                }
-                if (items.length === 0) {
-                  return (
-                    <View style={styles.emptyState}>
-                      <Ionicons name="sad-outline" size={40} color={Colors.textTertiary} />
-                      <Text style={styles.emptyTitle}>No apps found</Text>
-                      <Text style={styles.emptyText}>
-                        We couldn't find any {activeCategory?.toLowerCase()} apps installed on your device.
-                      </Text>
-                    </View>
-                  );
-                }
-                return items.map((item) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    style={styles.listItem}
-                    activeOpacity={0.7}
-                    onPress={() => {
-                      if (item.url === "__breathing__") {
-                        closeModal();
-                        setTimeout(() => navigation.navigate("Breathing"), 300);
-                      } else {
-                        Linking.openURL(item.url).catch(() => {});
-                      }
-                    }}
-                  >
-                    <View style={[styles.listIconWrap, { backgroundColor: item.iconBg }]}>
-                      <Ionicons name={item.icon as any} size={22} color={item.iconColor} />
-                    </View>
-                    <Text style={styles.listTitle}>{item.title}</Text>
-                    <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
-                  </TouchableOpacity>
-                ));
-              })()}
+              {(APP_CATALOG[activeCategory ?? ""] ?? []).map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.listItem}
+                  activeOpacity={0.7}
+                  onPress={() => handleOpenApp(item)}
+                >
+                  <View style={[styles.listIconWrap, { backgroundColor: item.iconBg }]}>
+                    <Ionicons name={item.icon as any} size={22} color={item.iconColor} />
+                  </View>
+                  <Text style={styles.listTitle}>{item.title}</Text>
+                  <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
+                </TouchableOpacity>
+              ))}
             </ScrollView>
 
           </Animated.View>
