@@ -6,7 +6,14 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
+  Image,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { storage, auth } from "../../config/firebase";
+import { updateProfile } from "@react-native-firebase/auth";
+import { ref, putFile, getDownloadURL } from "@react-native-firebase/storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -23,7 +30,8 @@ import { BottomTabScreenPropsType } from "../../types/navigation";
 
 export default function ProfileScreen({ navigation }: BottomTabScreenPropsType<"Profile">) {
   const { tasks } = useTask();
-  const { user, signOut } = useAuth();
+  const { user, signOut, refreshUser } = useAuth();
+  const [uploading, setUploading] = useState(false);
   const {
     isDarkMode,
     isNotifEnabled,
@@ -46,6 +54,48 @@ export default function ProfileScreen({ navigation }: BottomTabScreenPropsType<"
     );
   };
 
+  const handlePickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const uri = result.assets[0].uri;
+        uploadImage(uri);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Could not pick image");
+    }
+  };
+
+  const uploadImage = async (uri: string) => {
+    if (!user) return;
+    setUploading(true);
+    try {
+      const filename = `avatar_${Date.now()}.jpg`;
+      const reference = ref(storage, `users/${user.uid}/${filename}`);
+      
+      // Use RN Firebase modular putFile
+      await putFile(reference, uri);
+      const downloadUrl = await getDownloadURL(reference);
+      
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, { photoURL: downloadUrl });
+        refreshUser();
+      }
+      
+      Alert.alert("Success", "Profile photo updated!");
+    } catch (error: any) {
+      Alert.alert("Upload Failed", error.message || "Failed to upload image.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -57,9 +107,20 @@ export default function ProfileScreen({ navigation }: BottomTabScreenPropsType<"
         {/* ── Hero Card ── */}
         <View style={styles.heroCard}>
           <View style={styles.profileHeader}>
-            <View style={styles.avatarWrap}>
-              <Ionicons name="person" size={32} color={Colors.primary} />
-            </View>
+            <TouchableOpacity onPress={handlePickImage} style={styles.avatarWrap} disabled={uploading}>
+              {uploading ? (
+                <ActivityIndicator color={Colors.primary} />
+              ) : user?.photoURL ? (
+                <Image source={{ uri: user.photoURL }} style={styles.avatarImage} />
+              ) : (
+                <Ionicons name="person" size={32} color={Colors.primary} />
+              )}
+              {!uploading && (
+                <View style={styles.editIconBadge}>
+                  <Ionicons name="camera" size={12} color="#fff" />
+                </View>
+              )}
+            </TouchableOpacity>
             <View style={styles.profileInfo}>
               <Text style={styles.name}>{user?.displayName || "Maszaen"}</Text>
               <Text style={styles.email}>{user?.email || "maszaen@breathe.app"}</Text>
@@ -219,6 +280,25 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
+    position: "relative",
+  },
+  avatarImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  editIconBadge: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: Colors.primary,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: Colors.surface,
   },
   profileInfo: {
     flex: 1,

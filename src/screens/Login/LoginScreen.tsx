@@ -7,6 +7,7 @@ import {
   View,
   Alert,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from "@react-native-firebase/auth";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { auth } from "../../config/firebase";
@@ -30,7 +31,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<"Login"
   React.useEffect(() => {
     GoogleSignin.configure({
       // TODO: Replace with your actual Web Client ID from Firebase Console
-      // webClientId: "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com",
+      webClientId: "1016215003148-du589r8tu63dt678gbsk6gir43ff6ohj.apps.googleusercontent.com",
     });
   }, []);
 
@@ -40,16 +41,16 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<"Login"
       // Check if your device supports Google Play
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       // Get the users ID token
-      const signInResult = await GoogleSignin.signIn();
+      await GoogleSignin.signIn();
       
-      // Try to get the idToken
-      let idToken = signInResult.data?.idToken;
-      if (!idToken) {
+      // Get the idToken and accessToken
+      const tokens = await GoogleSignin.getTokens();
+      if (!tokens.idToken) {
         throw new Error('No ID token found');
       }
 
       // Create a Google credential with the token
-      const googleCredential = GoogleAuthProvider.credential(idToken);
+      const googleCredential = GoogleAuthProvider.credential(tokens.idToken, tokens.accessToken);
 
       // Sign-in the user with the credential
       await signInWithCredential(auth, googleCredential);
@@ -143,6 +144,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<"Login"
           onPress={handleGoogleLogin}
           disabled={loading}
         >
+          <Ionicons name="logo-google" size={20} color={Colors.text} />
           <Text style={styles.socialButtonText}>
             {loading ? "Please wait..." : "Continue with Google"}
           </Text>
@@ -208,6 +210,8 @@ const styles = StyleSheet.create({
 
   socialButton: {
     height: 52,
+    flexDirection: "row",
+    gap: Spacing.sm,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: Colors.border,

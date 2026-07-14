@@ -1,5 +1,6 @@
 import { getAuth } from '@react-native-firebase/auth';
 import { getApp } from '@react-native-firebase/app';
+import { getStorage } from '@react-native-firebase/storage';
 
 // The Google services JSON (Android) and GoogleService-Info.plist (iOS) 
 // are automatically loaded by the native SDK.
@@ -7,3 +8,4 @@ import { getApp } from '@react-native-firebase/app';
 
 export const app = getApp();
 export const auth = getAuth(app);
+export const storage = getStorage(app);

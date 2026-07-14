@@ -6,6 +6,7 @@ type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   signOut: () => Promise<void>;
+  refreshUser: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,8 +31,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const refreshUser = () => {
+    // Force a re-render with the updated user object
+    if (auth.currentUser) {
+      setUser({ ...auth.currentUser } as User);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, signOut }}>
+    <AuthContext.Provider value={{ user, isLoading, signOut, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
