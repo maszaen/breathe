@@ -6,7 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { generateDummyTasks } from "../utils/dummyTasks";
+import { generateDynamicTasks } from "../utils/dummyTasks";
 
 export type Task = {
   id: number;
@@ -26,6 +26,8 @@ type TaskContextType = {
   deleteTask: (id: number) => void;
   toggleTask: (id: number) => void;
   updateTask: (task: Task) => void;
+  resetTasks: (level: "low" | "medium" | "high") => void;
+  clearTasks: () => void;
 };
 
 const TaskContext = createContext<TaskContextType | undefined>(
@@ -50,14 +52,14 @@ export function TaskProvider({
           if (Array.isArray(parsed) && parsed.length > 0) {
             setTasks(parsed);
           } else {
-            setTasks(generateDummyTasks());
+            setTasks(generateDynamicTasks("low"));
           }
         } else {
-          setTasks(generateDummyTasks());
+          setTasks(generateDynamicTasks("low"));
         }
       } catch (error) {
         console.error("Failed to load tasks from storage", error);
-        setTasks(generateDummyTasks());
+        setTasks(generateDynamicTasks("low"));
       } finally {
         setIsLoaded(true);
       }
@@ -118,6 +120,14 @@ export function TaskProvider({
     );
   };
 
+  const resetTasks = (level: "low" | "medium" | "high") => {
+    setTasks(generateDynamicTasks(level));
+  };
+
+  const clearTasks = () => {
+    setTasks([]);
+  };
+
   return (
     <TaskContext.Provider
       value={{
@@ -126,6 +136,8 @@ export function TaskProvider({
         deleteTask,
         toggleTask,
         updateTask,
+        resetTasks,
+        clearTasks,
       }}
     >
       {children}

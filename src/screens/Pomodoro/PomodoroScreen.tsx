@@ -88,11 +88,24 @@ export default function PomodoroScreen({ navigation }: Props) {
       </View>
 
       {/* Task info */}
-      <Text style={styles.taskName} numberOfLines={2}>
-        {activeTask?.taskName ?? "Focused task"}
-      </Text>
-      {!!activeTask?.course && (
-        <Text style={styles.course}>{activeTask.course}</Text>
+      {activeTask ? (
+        <View style={styles.activeTaskCard}>
+          <View style={styles.activeTaskIcon}>
+            <Ionicons name="document-text" size={20} color={Colors.primary} />
+          </View>
+          <View style={styles.activeTaskDetails}>
+            <Text style={styles.activeTaskName} numberOfLines={2}>
+              {activeTask.taskName}
+            </Text>
+            {!!activeTask.course && (
+              <Text style={styles.activeTaskCourse}>{activeTask.course}</Text>
+            )}
+          </View>
+        </View>
+      ) : (
+        <Text style={styles.taskName} numberOfLines={2}>
+          General Focus Session
+        </Text>
       )}
 
       {/* Timer */}
@@ -424,6 +437,39 @@ const styles = StyleSheet.create({
   course: {
     fontSize: 13,
     color: Colors.textSecondary,
+  },
+
+  activeTaskCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.primaryLight,
+    padding: Spacing.md,
+    borderRadius: Radius.md,
+    marginTop: Spacing.xs,
+    gap: Spacing.sm,
+  },
+
+  activeTaskIcon: {
+    backgroundColor: "#fff",
+    padding: 8,
+    borderRadius: Radius.full,
+  },
+
+  activeTaskDetails: {
+    flex: 1,
+  },
+
+  activeTaskName: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: Colors.primary,
+  },
+
+  activeTaskCourse: {
+    fontSize: 12,
+    color: Colors.primary,
+    opacity: 0.8,
+    marginTop: 2,
   },
 
   timerWrap: {

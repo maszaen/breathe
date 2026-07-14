@@ -39,7 +39,7 @@ export default function QuickActionGrid({ navigation }: QuickActionGridProps) {
       label: "AI Assistant",
       bgColor: "#EDE9FE",
       iconColor: "#7C3AED",
-      onPress: () => {},
+      onPress: () => navigation.navigate("AIAssistant"),
     },
   ];
 

@@ -29,7 +29,7 @@ import { CommonActions } from "@react-navigation/native";
 import { BottomTabScreenPropsType } from "../../types/navigation";
 
 export default function ProfileScreen({ navigation }: BottomTabScreenPropsType<"Profile">) {
-  const { tasks } = useTask();
+  const { tasks, resetTasks, clearTasks } = useTask();
   const { user, signOut, refreshUser } = useAuth();
   const [uploading, setUploading] = useState(false);
   const {
@@ -122,8 +122,8 @@ export default function ProfileScreen({ navigation }: BottomTabScreenPropsType<"
               )}
             </TouchableOpacity>
             <View style={styles.profileInfo}>
-              <Text style={styles.name}>{user?.displayName || "Maszaen"}</Text>
-              <Text style={styles.email}>{user?.email || "maszaen@breathe.app"}</Text>
+              <Text style={styles.name}>{user?.displayName || "Mas Wowo Ganteng"}</Text>
+              <Text style={styles.email}>{user?.email || "wowoduaperiode@breathe.app"}</Text>
             </View>
           </View>
           
@@ -226,6 +226,76 @@ export default function ProfileScreen({ navigation }: BottomTabScreenPropsType<"
               <Text style={styles.settingText}>Privacy & Security</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={Colors.textTertiary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* ── Data Management ── */}
+        <Text style={styles.sectionTitle}>Data Management</Text>
+        <View style={styles.settingsCard}>
+          <TouchableOpacity style={styles.linkRow} onPress={() => {
+            Alert.alert("Reset Data", "Generate dummy tasks for Low Stress?", [
+              { text: "Cancel", style: "cancel" },
+              { text: "Confirm", onPress: () => resetTasks("low") }
+            ]);
+          }} activeOpacity={0.7}>
+            <View style={styles.settingLeft}>
+              <View style={[styles.settingIcon, { backgroundColor: "#ECFDF5" }]}>
+                <Ionicons name="refresh" size={18} color="#059669" />
+              </View>
+              <Text style={styles.settingText}>Reset Data (Low Stress)</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={Colors.textTertiary} />
+          </TouchableOpacity>
+          <View style={styles.settingDivider} />
+
+          <TouchableOpacity style={styles.linkRow} onPress={() => {
+            Alert.alert("Reset Data", "Generate dummy tasks for Medium Stress?", [
+              { text: "Cancel", style: "cancel" },
+              { text: "Confirm", onPress: () => resetTasks("medium") }
+            ]);
+          }} activeOpacity={0.7}>
+            <View style={styles.settingLeft}>
+              <View style={[styles.settingIcon, { backgroundColor: "#FEF3C7" }]}>
+                <Ionicons name="refresh" size={18} color="#D97706" />
+              </View>
+              <Text style={styles.settingText}>Reset Data (Medium Stress)</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={Colors.textTertiary} />
+          </TouchableOpacity>
+          <View style={styles.settingDivider} />
+
+          <TouchableOpacity style={styles.linkRow} onPress={() => {
+            Alert.alert("Reset Data", "Generate dummy tasks for High Stress?", [
+              { text: "Cancel", style: "cancel" },
+              { text: "Confirm", onPress: () => resetTasks("high") }
+            ]);
+          }} activeOpacity={0.7}>
+            <View style={styles.settingLeft}>
+              <View style={[styles.settingIcon, { backgroundColor: "#FFE4E6" }]}>
+                <Ionicons name="refresh" size={18} color="#E11D48" />
+              </View>
+              <Text style={styles.settingText}>Reset Data (High Stress)</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={Colors.textTertiary} />
+          </TouchableOpacity>
+          <View style={styles.settingDivider} />
+
+          <TouchableOpacity 
+            style={styles.linkRow} 
+            onPress={() => {
+              Alert.alert("Clear Data", "Are you sure you want to delete all tasks?", [
+                { text: "Cancel", style: "cancel" },
+                { text: "Delete", style: "destructive", onPress: clearTasks }
+              ]);
+            }} 
+            activeOpacity={0.7}
+          >
+            <View style={styles.settingLeft}>
+              <View style={[styles.settingIcon, { backgroundColor: "#FEE2E2" }]}>
+                <Ionicons name="trash" size={18} color="#DC2626" />
+              </View>
+              <Text style={[styles.settingText, { color: "#DC2626" }]}>Clear All Tasks</Text>
+            </View>
           </TouchableOpacity>
         </View>
 

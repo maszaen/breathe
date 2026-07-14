@@ -149,6 +149,17 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<"Login"
             {loading ? "Please wait..." : "Continue with Google"}
           </Text>
         </Pressable>
+
+        <Pressable 
+          style={styles.socialButton}
+          onPress={() => navigation.replace("Main", { screen: "Home" })}
+          disabled={loading}
+        >
+          <Ionicons name="person-outline" size={20} color={Colors.text} />
+          <Text style={styles.socialButtonText}>
+            Continue as Guest (Presentation)
+          </Text>
+        </Pressable>
       </View>
     </AuthLayout>
   );

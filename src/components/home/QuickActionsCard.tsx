@@ -35,7 +35,7 @@ export default function QuickActionsCard({ navigation }: QuickActionsCardProps) 
       label: "AI Chat",
       bg: "#EDE9FE",
       iconColor: "#7C3AED",
-      onPress: () => {},
+      onPress: () => navigation.navigate("AIAssistant"),
     },
   ];
 

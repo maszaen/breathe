@@ -8,7 +8,7 @@ function formatDate(date: Date): string {
   return `${d}/${m}/${y}`;
 }
 
-export function generateDummyTasks(): Task[] {
+export function generateDynamicTasks(level: "low" | "medium" | "high" = "low"): Task[] {
   const now = new Date();
   
   // Create relative dates
@@ -29,96 +29,39 @@ export function generateDummyTasks(): Task[] {
   const nextMonth = new Date(now);
   nextMonth.setMonth(nextMonth.getMonth() + 1);
 
-  return [
-    {
-      id: 1001,
-      taskName: "Submit Calculus Assignment",
-      course: "Math 101",
-      deadline: formatDate(yesterday),
-      deadlineTime: "23:59",
-      completed: false,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1002,
-      taskName: "Read Chapter 4-5",
-      course: "History 201",
-      deadline: formatDate(yesterday),
-      deadlineTime: "10:00",
-      completed: true,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1003,
-      taskName: "Review React Native Docs",
-      course: "Mobile Dev",
-      deadline: formatDate(today),
-      deadlineTime: "15:00",
-      completed: false,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1004,
-      taskName: "Buy Groceries",
-      course: "Personal",
-      deadline: formatDate(today),
-      deadlineTime: "19:30",
-      completed: false,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1005,
-      taskName: "Prepare presentation slides",
-      course: "Business 301",
-      deadline: formatDate(tomorrow),
-      deadlineTime: "08:00",
-      completed: false,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1006,
-      taskName: "Fix UI Bugs in Profile Screen",
-      course: "Software Eng",
-      deadline: formatDate(threeDaysFromNow),
-      deadlineTime: "12:00",
-      completed: false,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1007,
-      taskName: "Complete Lab Report",
-      course: "Physics 101",
-      deadline: formatDate(threeDaysFromNow),
-      deadlineTime: "23:59",
-      completed: false,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1008,
-      taskName: "Group Meeting prep",
-      course: "Project Management",
-      deadline: formatDate(nextWeek),
-      deadlineTime: "16:00",
-      completed: false,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1009,
-      taskName: "Midterm Exam",
-      course: "Math 101",
-      deadline: formatDate(nextWeek),
-      deadlineTime: "09:00",
-      completed: false,
-      createdAt: now.getTime(),
-    },
-    {
-      id: 1010,
-      taskName: "Final Project Submission",
-      course: "Mobile Dev",
-      deadline: formatDate(nextMonth),
-      deadlineTime: "23:59",
-      completed: false,
-      createdAt: now.getTime(),
-    }
-  ];
+  const baseTasks: Task[] = [];
+
+  if (level === "low") {
+    // Low Stress (Target ~30 Stress -> 70% Mental Health "Healthy/Good")
+    // 2 Completed, 1 in 3 days, 1 next week, 1 next month
+    baseTasks.push(
+      { id: Date.now() + 1, taskName: "Membaca Jurnal", course: "Keamanan Jaringan", deadline: formatDate(yesterday), deadlineTime: "10:00", completed: true, createdAt: now.getTime() },
+      { id: Date.now() + 2, taskName: "Review Materi Kelas", course: "Sistem Operasi", deadline: formatDate(yesterday), deadlineTime: "12:00", completed: true, createdAt: now.getTime() },
+      { id: Date.now() + 3, taskName: "Latihan Soal Ujian", course: "Math Discrete", deadline: formatDate(threeDaysFromNow), deadlineTime: "15:00", completed: false, createdAt: now.getTime() },
+      { id: Date.now() + 4, taskName: "Membuat Laporan Praktikum", course: "Multimedia", deadline: formatDate(nextWeek), deadlineTime: "23:59", completed: false, createdAt: now.getTime() },
+      { id: Date.now() + 5, taskName: "Kumpulkan Proposal Skripsi", course: "Metodologi Penelitian", deadline: formatDate(nextMonth), deadlineTime: "17:00", completed: false, createdAt: now.getTime() }
+    );
+  } else if (level === "medium") {
+    // Medium Stress (Target ~75 Stress -> 25% Mental Health "High Stress")
+    // 1 Today (35), 1 Tomorrow (25), 1 in 3 Days (15) = 75 Stress
+    baseTasks.push(
+      { id: Date.now() + 1, taskName: "Catatan Kuliah", course: "Pengantar TI", deadline: formatDate(yesterday), deadlineTime: "08:00", completed: true, createdAt: now.getTime() },
+      { id: Date.now() + 2, taskName: "Kuis Online", course: "Statistika", deadline: formatDate(today), deadlineTime: "23:59", completed: false, createdAt: now.getTime() },
+      { id: Date.now() + 3, taskName: "Mengerjakan PR", course: "Pemrograman Web", deadline: formatDate(tomorrow), deadlineTime: "10:00", completed: false, createdAt: now.getTime() },
+      { id: Date.now() + 4, taskName: "Presentasi Mingguan", course: "Kecerdasan Buatan", deadline: formatDate(threeDaysFromNow), deadlineTime: "14:00", completed: false, createdAt: now.getTime() },
+      { id: Date.now() + 5, taskName: "Meeting Kelompok", course: "Rekayasa Perangkat Lunak", deadline: formatDate(yesterday), deadlineTime: "16:00", completed: true, createdAt: now.getTime() }
+    );
+  } else {
+    // High Stress (Target ~95 Stress -> 5% Mental Health "Critical")
+    // 1 Overdue (35), 1 Today (35), 1 Tomorrow (25) = 95 Stress
+    baseTasks.push(
+      { id: Date.now() + 1, taskName: "Tugas Besar", course: "Grafika Komputer", deadline: formatDate(yesterday), deadlineTime: "23:59", completed: false, createdAt: now.getTime() },
+      { id: Date.now() + 2, taskName: "Revisi Makalah", course: "Bahasa Indonesia", deadline: formatDate(today), deadlineTime: "18:00", completed: false, createdAt: now.getTime() },
+      { id: Date.now() + 3, taskName: "Submit Proyek Akhir", course: "Mobile Development", deadline: formatDate(tomorrow), deadlineTime: "12:00", completed: false, createdAt: now.getTime() },
+      { id: Date.now() + 4, taskName: "Desain UI/UX", course: "HCI", deadline: formatDate(yesterday), deadlineTime: "09:00", completed: true, createdAt: now.getTime() },
+      { id: Date.now() + 5, taskName: "Quiz Dadakan", course: "Arsitektur Komputer", deadline: formatDate(today), deadlineTime: "10:00", completed: false, createdAt: now.getTime() } // This brings stress > 100, capped at 100
+    );
+  }
+
+  return baseTasks;
 }

@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import { usePomodoro } from "../../context/PomodoroContext";
+import { useTask } from "../../context/TaskContext";
 
 import { Colors, Shadow } from "../../theme/colors";
 import { Radius } from "../../theme/radius";
@@ -61,7 +62,9 @@ function formatTime(totalSeconds: number) {
 import { BottomTabScreenPropsType } from "../../types/navigation";
 
 export default function FunBreakScreen({ navigation }: BottomTabScreenPropsType<"Fun Break">) {
-  const { sessionType, isRunning, remainingSeconds } = usePomodoro();
+  const { sessionType, isRunning, remainingSeconds, activeTaskId } = usePomodoro();
+  const { tasks } = useTask();
+  const activeTask = tasks.find(t => t.id === activeTaskId) ?? null;
   
   const [modalVisible, setModalVisible] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -247,6 +250,14 @@ export default function FunBreakScreen({ navigation }: BottomTabScreenPropsType<
               <Text style={styles.heroSubActive}>
                 {isRunning ? "Timer is running" : "Timer is paused"}
               </Text>
+              {activeTask && isFocus && (
+                <View style={styles.heroActiveTaskBadge}>
+                  <Ionicons name="document-text" size={14} color={Colors.primary} />
+                  <Text style={styles.heroActiveTaskText} numberOfLines={1}>
+                    {activeTask.taskName}
+                  </Text>
+                </View>
+              )}
             </View>
           ) : (
             <>
@@ -439,6 +450,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.textSecondary,
     marginTop: 4,
+  },
+  heroActiveTaskBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
+    borderRadius: Radius.full,
+    marginTop: Spacing.md,
+    gap: 4,
+    ...Shadow.sm,
+  },
+  heroActiveTaskText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: Colors.primary,
+    maxWidth: 200,
   },
   heroLeft: {
     flexDirection: "row",
