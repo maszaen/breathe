@@ -20,6 +20,7 @@ export type RootStackParamList = {
   EditTask: { task: Task };
   Pomodoro: undefined;
   AIAssistant: undefined;
+  Breathing: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

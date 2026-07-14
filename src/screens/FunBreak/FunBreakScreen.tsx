@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  Image,
   Pressable,
   Animated,
   TextInput,
@@ -23,35 +22,49 @@ import { Radius } from "../../theme/radius";
 import { Spacing } from "../../theme/spacing";
 import { Typography } from "../../theme/typography";
 
-// -- DUMMY DATA --
-const MODAL_DATA: any = {
-  Games: [
-    { id: "1", title: "PokéRogue", url: "https://pokerogue.net/", img: "https://ui-avatars.com/api/?name=PR&background=EF4444&color=fff&size=128" },
-    { id: "2", title: "Wordle", url: "https://www.nytimes.com/games/wordle/index.html", img: "https://ui-avatars.com/api/?name=WO&background=10B981&color=fff&size=128" },
-    { id: "3", title: "2048", url: "https://play2048.co/", img: "https://ui-avatars.com/api/?name=20&background=F59E0B&color=fff&size=128" },
-  ],
+// ── App catalog: each entry has a deep-link scheme to detect + fallback URL ──
+type AppEntry = {
+  id: string;
+  title: string;
+  scheme: string;      // used for canOpenURL detection
+  url: string;         // where to redirect
+  icon: string;        // Ionicons name
+  iconBg: string;
+  iconColor: string;
+};
+
+const APP_CATALOG: Record<string, AppEntry[]> = {
   Music: [
-    { id: "1", title: "Spotify Lofi", url: "https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn", img: "https://ui-avatars.com/api/?name=SP&background=10B981&color=fff&size=128" },
-    { id: "2", title: "Apple Music", url: "https://music.apple.com/", img: "https://ui-avatars.com/api/?name=AM&background=EF4444&color=fff&size=128" },
-    { id: "3", title: "YouTube Music", url: "https://music.youtube.com/", img: "https://ui-avatars.com/api/?name=YM&background=EF4444&color=fff&size=128" },
+    { id: "spotify",   title: "Spotify",       scheme: "spotify://",                url: "spotify://",                          icon: "musical-notes", iconBg: "#1DB954", iconColor: "#fff" },
+    { id: "ytmusic",   title: "YouTube Music", scheme: "youtubemusic://",            url: "https://music.youtube.com",           icon: "logo-youtube",  iconBg: "#FF0000", iconColor: "#fff" },
+    { id: "joox",      title: "JOOX",          scheme: "joox://",                   url: "https://www.joox.com",               icon: "musical-note",  iconBg: "#00C473", iconColor: "#fff" },
+    { id: "soundcloud",title: "SoundCloud",    scheme: "soundcloud://",             url: "https://soundcloud.com",             icon: "headset",       iconBg: "#FF5500", iconColor: "#fff" },
+    { id: "tidal",     title: "TIDAL",         scheme: "tidal://",                  url: "https://tidal.com",                  icon: "infinite",      iconBg: "#000",    iconColor: "#fff" },
+  ],
+  Games: [
+    { id: "chess",     title: "Chess.com",     scheme: "chess://",                  url: "https://www.chess.com",              icon: "extension-puzzle", iconBg: "#81B64C", iconColor: "#fff" },
+    { id: "lichess",   title: "Lichess",       scheme: "lichess://",                url: "https://lichess.org",                icon: "extension-puzzle", iconBg: "#000",    iconColor: "#fff" },
+    { id: "wordle",    title: "Wordle",        scheme: "https://www.nytimes.com",   url: "https://www.nytimes.com/games/wordle/index.html", icon: "grid", iconBg: "#6AAA64", iconColor: "#fff" },
+    { id: "2048",      title: "2048",          scheme: "https://play2048.co",       url: "https://play2048.co/",               icon: "apps",          iconBg: "#F59E0B", iconColor: "#fff" },
   ],
   Videos: [
-    { id: "1", title: "YouTube", url: "https://www.youtube.com/", img: "https://ui-avatars.com/api/?name=YT&background=EF4444&color=fff&size=128" },
-    { id: "2", title: "TikTok", url: "https://www.tiktok.com/", img: "https://ui-avatars.com/api/?name=TK&background=000&color=fff&size=128" },
-    { id: "3", title: "Twitch", url: "https://www.twitch.tv/", img: "https://ui-avatars.com/api/?name=TW&background=8B5CF6&color=fff&size=128" },
+    { id: "youtube",   title: "YouTube",       scheme: "youtube://",                url: "https://www.youtube.com",            icon: "logo-youtube",  iconBg: "#FF0000", iconColor: "#fff" },
+    { id: "netflix",   title: "Netflix",       scheme: "nflx://",                   url: "https://www.netflix.com",            icon: "tv",            iconBg: "#E50914", iconColor: "#fff" },
+    { id: "tiktok",    title: "TikTok",        scheme: "snssdk1233://",             url: "https://www.tiktok.com",             icon: "logo-tiktok",   iconBg: "#000",    iconColor: "#fff" },
+    { id: "twitch",    title: "Twitch",        scheme: "twitch://",                 url: "https://www.twitch.tv",              icon: "game-controller", iconBg: "#9146FF", iconColor: "#fff" },
   ],
   Relaxation: [
-    { id: "1", title: "Breathing Guide", url: "https://www.headspace.com/meditation/breathing-exercises", icon: "leaf" },
-    { id: "2", title: "Stretching Routine", url: "https://www.youtube.com/watch?v=g_tea8ZNk5A", icon: "body" },
-    { id: "3", title: "Meditation Timer", url: "https://insighttimer.com/", icon: "water" },
+    { id: "breathing", title: "Breathing Exercise", scheme: "__internal__",        url: "__breathing__",                      icon: "leaf",          iconBg: Colors.primaryLight, iconColor: Colors.primary },
+    { id: "stretch",   title: "Stretching Guide",   scheme: "https://youtube.com", url: "https://www.youtube.com/results?search_query=office+stretching+routine", icon: "body", iconBg: "#D1FAE5", iconColor: Colors.success },
+    { id: "insight",   title: "Meditation Timer",   scheme: "https://insighttimer.com", url: "https://insighttimer.com",      icon: "water",         iconBg: "#EDE9FE", iconColor: "#7C3AED" },
   ],
 };
 
 const GRID_ITEMS = [
-  { label: "Games", icon: "game-controller", bg: "#FEE2E2", iconColor: "#DC2626" },
-  { label: "Music", icon: "musical-notes", bg: "#D1FAE5", iconColor: "#059669" },
-  { label: "Videos", icon: "videocam", bg: "#FFF7ED", iconColor: "#EA580C" },
-  { label: "Relaxation", icon: "leaf", bg: "#E0E7FF", iconColor: "#4F46E5" },
+  { label: "Games",      icon: "game-controller", bg: "#FEE2E2", iconColor: "#DC2626" },
+  { label: "Music",      icon: "musical-notes",   bg: "#D1FAE5", iconColor: "#059669" },
+  { label: "Videos",     icon: "videocam",         bg: "#FFF7ED", iconColor: "#EA580C" },
+  { label: "Relaxation", icon: "leaf",             bg: "#E0E7FF", iconColor: "#4F46E5" },
 ];
 
 function formatTime(totalSeconds: number) {
@@ -68,6 +81,36 @@ export default function FunBreakScreen({ navigation }: BottomTabScreenPropsType<
   
   const [modalVisible, setModalVisible] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [detectedApps, setDetectedApps] = useState<Record<string, AppEntry[]>>({});
+  const [detecting, setDetecting] = useState(false);
+
+  // Detect installed apps on mount
+  useEffect(() => {
+    const detect = async () => {
+      setDetecting(true);
+      const result: Record<string, AppEntry[]> = {};
+      for (const [category, apps] of Object.entries(APP_CATALOG)) {
+        const available: AppEntry[] = [];
+        for (const app of apps) {
+          // Always include internal routes and HTTP(S) links (web fallbacks always work)
+          if (app.scheme === "__internal__" || app.scheme.startsWith("http")) {
+            available.push(app);
+          } else {
+            try {
+              const can = await Linking.canOpenURL(app.scheme);
+              if (can) available.push(app);
+            } catch {
+              // skip
+            }
+          }
+        }
+        result[category] = available;
+      }
+      setDetectedApps(result);
+      setDetecting(false);
+    };
+    detect();
+  }, []);
 
   // Local Break Timer Logic
   const [breakRunning, setBreakRunning] = useState(false);
@@ -353,28 +396,48 @@ export default function FunBreakScreen({ navigation }: BottomTabScreenPropsType<
             </View>
 
             <ScrollView contentContainerStyle={styles.modalList}>
-              {activeCategory && MODAL_DATA[activeCategory]?.map((item: any) => (
-                <TouchableOpacity 
-                  key={item.id} 
-                  style={styles.listItem} 
-                  activeOpacity={0.7}
-                  onPress={() => {
-                    if (item.url) {
-                      Linking.openURL(item.url).catch(err => console.error("Couldn't load page", err));
-                    }
-                  }}
-                >
-                  {item.img ? (
-                    <Image source={{ uri: item.img }} style={styles.listImage} />
-                  ) : (
-                    <View style={styles.listIconWrap}>
-                      <Ionicons name={item.icon as any} size={24} color={Colors.primary} />
+              {(() => {
+                const items = detectedApps[activeCategory ?? ""] ?? [];
+                if (detecting) {
+                  return (
+                    <View style={styles.emptyState}>
+                      <Text style={styles.emptyText}>Detecting apps...</Text>
                     </View>
-                  )}
-                  <Text style={styles.listTitle}>{item.title}</Text>
-                  <Ionicons name="open-outline" size={16} color={Colors.textTertiary} />
-                </TouchableOpacity>
-              ))}
+                  );
+                }
+                if (items.length === 0) {
+                  return (
+                    <View style={styles.emptyState}>
+                      <Ionicons name="sad-outline" size={40} color={Colors.textTertiary} />
+                      <Text style={styles.emptyTitle}>No apps found</Text>
+                      <Text style={styles.emptyText}>
+                        We couldn't find any {activeCategory?.toLowerCase()} apps installed on your device.
+                      </Text>
+                    </View>
+                  );
+                }
+                return items.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.listItem}
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      if (item.url === "__breathing__") {
+                        closeModal();
+                        setTimeout(() => navigation.navigate("Breathing"), 300);
+                      } else {
+                        Linking.openURL(item.url).catch(() => {});
+                      }
+                    }}
+                  >
+                    <View style={[styles.listIconWrap, { backgroundColor: item.iconBg }]}>
+                      <Ionicons name={item.icon as any} size={22} color={item.iconColor} />
+                    </View>
+                    <Text style={styles.listTitle}>{item.title}</Text>
+                    <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
+                  </TouchableOpacity>
+                ));
+              })()}
             </ScrollView>
 
           </Animated.View>
@@ -595,10 +658,27 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: Radius.md,
-    backgroundColor: Colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginRight: Spacing.md,
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: Spacing.xl * 2,
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.xl,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: Colors.text,
+    textAlign: "center",
+  },
+  emptyText: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: "center",
+    lineHeight: 20,
   },
   listTitle: {
     flex: 1,

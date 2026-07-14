@@ -9,6 +9,7 @@ import AddTaskScreen from "../screens/AddTask/AddTaskScreen";
 import EditTaskScreen from "../screens/EditTask/EditTaskScreen";
 import PomodoroScreen from "../screens/Pomodoro/PomodoroScreen";
 import AIAssistantScreen from "../screens/AIAssistant/AIAssistantScreen";
+import BreathingScreen from "../screens/Breathing/BreathingScreen";
 
 import BottomTabNavigator from "./BottomTabNavigator";
 import { RootStackParamList } from "../types/navigation";
@@ -62,6 +63,11 @@ export default function AppNavigator() {
         <Stack.Screen
           name="AIAssistant"
           component={AIAssistantScreen}
+        />
+
+        <Stack.Screen
+          name="Breathing"
+          component={BreathingScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
